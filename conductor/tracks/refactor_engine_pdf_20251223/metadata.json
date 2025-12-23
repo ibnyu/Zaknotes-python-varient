@@ -1,0 +1,8 @@
+{
+  "track_id": "refactor_engine_pdf_20251223",
+  "type": "refactor",
+  "status": "new",
+  "created_at": "2025-12-23T14:30:00Z",
+  "updated_at": "2025-12-23T14:30:00Z",
+  "description": "Refactor Bot Engine & PDF Conversion: Clean up the repository, refactor bot_engine.py to fix file upload and text extraction issues using robust selectors from ui_elements/, and replace the Node.js PDF conversion with a native Python Playwright implementation."
+}
