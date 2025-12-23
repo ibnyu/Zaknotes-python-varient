@@ -23,8 +23,8 @@
 - [x] Task: Implement HTML to PDF conversion using Playwright Python `page.pdf()` with CSS injection [2ff6947]
 - [x] Task: Conductor - User Manual Verification 'PDF Conversion' (Protocol in workflow.md) [26cd4c4]
 
-## Phase 5: Integration & Final Polish
-- [ ] Task: Write Tests: End-to-end integration of the pipeline
-- [ ] Task: Integrate components into a unified execution flow in `bot_engine.py`
-- [ ] Task: Final verification and code style polish
-- [ ] Task: Conductor - User Manual Verification 'Integration & Final Polish' (Protocol in workflow.md)
+## Phase 5: Integration & Final Polish [checkpoint: 7f0e7a7]
+- [x] Task: Write Tests: End-to-end integration of the pipeline [f4125b4]
+- [x] Task: Integrate components into a unified execution flow in `bot_engine.py` [6be7789]
+- [x] Task: Final verification and code style polish [a2c49a9]
+- [x] Task: Conductor - User Manual Verification 'Integration & Final Polish' (Protocol in workflow.md) [7f0e7a7]
