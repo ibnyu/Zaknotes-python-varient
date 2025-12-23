@@ -17,11 +17,11 @@
 - [x] Task: Implement completion verification and clean extraction using "Copy as Markdown" flow [2b41bd7]
 - [~] Task: Conductor - User Manual Verification 'Bot Engine Upload & Extraction' (Protocol in workflow.md)
 
-## Phase 4: Python-Native PDF Conversion
+## Phase 4: Python-Native PDF Conversion [checkpoint: 26cd4c4]
 - [x] Task: Write Tests: MD to HTML and HTML to PDF conversion [2ff6947]
 - [x] Task: Implement MD to HTML conversion using Pandoc [2ff6947]
 - [x] Task: Implement HTML to PDF conversion using Playwright Python `page.pdf()` with CSS injection [2ff6947]
-- [ ] Task: Conductor - User Manual Verification 'PDF Conversion' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'PDF Conversion' (Protocol in workflow.md) [26cd4c4]
 
 ## Phase 5: Integration & Final Polish
 - [ ] Task: Write Tests: End-to-end integration of the pipeline
