@@ -4,7 +4,7 @@ This plan outlines the refactoring of `zaknotes.py` to include a job management 
 
 ## Phase 1: Job Manager Logic Enhancements
 - [x] **Task 1: Implement/Verify `cancel_pending` Logic** dbcb301
-- [~] **Task 2: Refine Pending Job Retrieval**
+- [x] **Task 2: Refine Pending Job Retrieval** af7653c
   - **Write Tests**: Verify that `get_pending_from_last_150()` returns the expected jobs for processing.
   - **Implement**: Ensure the method is robust and handles empty history.
 - [ ] **Task: Conductor - User Manual Verification 'Job Manager Logic Enhancements' (Protocol in workflow.md)**
