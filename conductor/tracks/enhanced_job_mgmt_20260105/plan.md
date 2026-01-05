@@ -15,10 +15,10 @@ This plan outlines the refactoring of `zaknotes.py` to include a job management 
   - **Implement**: Update the menu loop and conditional logic in `zaknotes.py`.
 - [x] **Task: Conductor - User Manual Verification 'CLI Menu Refactoring' (Protocol in workflow.md)** 0fa3bdd
 
-## Phase 3: Job Sub-Menu Integration
+## Phase 3: Job Sub-Menu Integration [checkpoint: 6e96dd5]
 - [x] **Task 1: Implement Job Sub-Menu Loop** a945c5f
 - [x] **Task 2: Integrate Sub-Menu Logic with JobManager** a945c5f
-- [ ] **Task: Conductor - User Manual Verification 'Job Sub-Menu Integration' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Job Sub-Menu Integration' (Protocol in workflow.md)** 0eb880e
 
 ## Phase 4: Push to Remote & Cleanup
 - [ ] **Task 1: Final End-to-End Verification**
