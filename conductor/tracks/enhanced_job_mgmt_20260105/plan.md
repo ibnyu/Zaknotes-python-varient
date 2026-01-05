@@ -16,15 +16,8 @@ This plan outlines the refactoring of `zaknotes.py` to include a job management 
 - [x] **Task: Conductor - User Manual Verification 'CLI Menu Refactoring' (Protocol in workflow.md)** 0fa3bdd
 
 ## Phase 3: Job Sub-Menu Integration
-- [ ] **Task 1: Implement Job Sub-Menu Loop**
-  - **Write Tests**: Define tests for the sub-menu routing (Options 1-4).
-  - **Implement**: Refactor `start_note_generation()` in `zaknotes.py` to display the new sub-menu and route to the correct logic.
-- [ ] **Task 2: Integrate Sub-Menu Logic with JobManager**
-  - **Implement**: 
-    - Option 1: Call `cancel_pending()`, then `add_jobs()`.
-    - Option 2: Call `add_jobs()` without cancelling.
-    - Option 3: Call `cancel_pending()` and return.
-    - Option 4: Call `get_pending_from_last_150()` and start processing.
+- [x] **Task 1: Implement Job Sub-Menu Loop** a945c5f
+- [x] **Task 2: Integrate Sub-Menu Logic with JobManager** a945c5f
 - [ ] **Task: Conductor - User Manual Verification 'Job Sub-Menu Integration' (Protocol in workflow.md)**
 
 ## Phase 4: Push to Remote & Cleanup
