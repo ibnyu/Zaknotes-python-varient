@@ -27,7 +27,7 @@ This plan outlines the steps to reorganize the Zaknotes codebase, clean up legac
   - **Implement**: Create `zaknotes.py` in the root with a loop that displays the 3 options and handles exit.
 - [x] **Task 2: Integrate Option 1 - Start Note Generation** 0845517
   - **Implement**: Link the "Process Videos" menu option to the existing logic in `src/job_manager.py`.
-- [ ] **Task 3: Implement Option 2 - Refresh Browser Profile**
+- [x] **Task 3: Implement Option 2 - Refresh Browser Profile** f2c9125
   - **Write Tests**: Define tests for directory deletion and browser launch triggers.
   - **Implement**: Add logic to `zaknotes.py` to delete `browser_profile/` and launch a non-headless browser via `browser_driver.py`.
 - [ ] **Task 4: Integrate Option 3 - Refresh Cookies**
