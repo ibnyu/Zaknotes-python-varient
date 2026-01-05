@@ -21,7 +21,7 @@ This plan outlines the steps to reorganize the Zaknotes codebase, clean up legac
   - **Implement**: Adjust code until sanity tests pass.
 - [x] **Task: Conductor - User Manual Verification 'Project Structure Reorganization' (Protocol in workflow.md)** b71252d
 
-## Phase 2: Unified CLI Implementation (`zaknotes.py`)
+## Phase 2: Unified CLI Implementation (`zaknotes.py`) [checkpoint: 299b5de]
 - [x] **Task 1: Implement Menu Framework** af64537
   - **Write Tests**: Define tests for the CLI menu structure and user input handling.
   - **Implement**: Create `zaknotes.py` in the root with a loop that displays the 3 options and handles exit.
@@ -32,7 +32,7 @@ This plan outlines the steps to reorganize the Zaknotes codebase, clean up legac
   - **Implement**: Add logic to `zaknotes.py` to delete `browser_profile/` and launch a non-headless browser via `browser_driver.py`.
 - [x] **Task 4: Integrate Option 3 - Refresh Cookies** df2011e
   - **Implement**: Link the "Refresh Cookies" menu option to `src/cookie_manager.py`.
-- [ ] **Task: Conductor - User Manual Verification 'Unified CLI Implementation' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Unified CLI Implementation' (Protocol in workflow.md)** 299b5de
 
 ## Phase 3: Final Integration & QA
 - [ ] **Task 1: End-to-End Flow Verification**
