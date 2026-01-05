@@ -52,6 +52,20 @@ def start_note_generation():
         finally:
             bot.close()
 
+def launch_manual_browser():
+    print("\n🚀 Launching Browser for manual inspection...")
+    print("📂 Using profile: browser_profile")
+    print("------------------------------------------")
+    driver = BrowserDriver()
+    try:
+        if driver.launch_browser():
+            print("\n✅ Browser is running.")
+            input("\nPress Enter to close browser and return to menu...")
+    except Exception as e:
+        print(f"❌ Failed to launch browser: {e}")
+    finally:
+        driver.close()
+
 def main_menu():
     while True:
         print("\n==============================")
@@ -60,10 +74,11 @@ def main_menu():
         print("1. Start Note Generation")
         print("2. Refresh Browser Profile")
         print("3. Refresh Cookies")
-        print("4. Exit")
+        print("4. Launch Browser")
+        print("5. Exit")
         print("------------------------------")
         
-        choice = input("Enter your choice (1-4): ").strip()
+        choice = input("Enter your choice (1-5): ").strip()
         
         if choice == '1':
             start_note_generation()
@@ -72,6 +87,8 @@ def main_menu():
         elif choice == '3':
             refresh_cookies()
         elif choice == '4':
+            launch_manual_browser()
+        elif choice == '5':
             print("Goodbye!")
             break
         else:
