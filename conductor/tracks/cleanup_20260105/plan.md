@@ -13,7 +13,7 @@ This plan outlines the steps to reorganize the Zaknotes codebase, clean up legac
 - [x] **Task 3: Refactor Imports and Paths** 2bd0b9a
   - Update all `import` statements in the moved modules to handle the new directory structure.
   - Update any hardcoded file paths (e.g., to `ui_elements` or `style.css`) within the modules to reflect their new locations relative to `src/`.
-- [ ] **Task 4: Git Ignore Updates**
+- [x] **Task 4: Git Ignore Updates** ddd9e60
   - **Action**: Update `.gitignore` to explicitly exclude `src/ui_elements/` and ensure `__pycache__/` and `*.pyc` are effectively ignored.
   - **Verification**: Run `git status --ignored` or check `git check-ignore` to confirm these paths are ignored.
 - [ ] **Task 5: Verify Module Integrity**
