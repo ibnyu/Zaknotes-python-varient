@@ -7,7 +7,7 @@ This plan outlines the steps to reorganize the Zaknotes codebase, clean up legac
   - Create the `src/` directory.
   - Move Python modules: `bot_engine.py`, `browser_driver.py`, `cookie_manager.py`, `downloader.py`, `find_vimeo_url.py`, `job_manager.py`, `pdf_converter_py.py` to `src/`.
   - Move resource directories: `ui_elements/` and `pdf_converter/` to `src/`.
-- [~] **Task 2: Cleanup Legacy Artifacts**
+- [x] **Task 2: Cleanup Legacy Artifacts** 33214ca
   - Delete all `test_*.py` files from the root directory.
   - Delete `__pycache__` directories.
 - [ ] **Task 3: Refactor Imports and Paths**
