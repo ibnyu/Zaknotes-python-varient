@@ -186,29 +186,41 @@ class AIStudioBot:
                 raise Exception("Timeout: Run button never enabled.")
 
             # 4. WAIT FOR COMPLETION
-            print("⏳ Waiting for generation...")
-            stop_btn = self.page.get_by_label("Stop generation")
-            
-            for _ in range(30):
-                if stop_btn.count() > 0: break
-                time.sleep(1)
-            
-            start_time = time.time()
-            while stop_btn.count() > 0:
-                elapsed = int(time.time() - start_time)
-                if elapsed % 10 == 0:
-                    print(f"   ... Generating ({elapsed}s) ...")
-                time.sleep(2)
-            
-            print("   ✅ Generation finished.")
-            
-            # 5. EXTRACTION
-            print("   Locating final response container...")
+            print("⏳ Waiting for generation to start...")
             last_model_turn = self.page.locator("ms-chat-turn").filter(
                 has=self.page.locator("[data-turn-role='Model']")
             ).last
-            last_model_turn.wait_for(state="visible", timeout=30000)
+            
+            # Wait up to 30s for the response block to appear
+            try:
+                last_model_turn.wait_for(state="visible", timeout=30000)
+            except:
+                raise Exception("Timeout: AI response block never appeared.")
 
+            print("⏳ Monitoring AI response growth...")
+            last_length = 0
+            stable_seconds = 0
+            start_monitoring_time = time.time()
+            
+            while stable_seconds < 15:
+                current_text = last_model_turn.inner_text()
+                current_length = len(current_text)
+                elapsed = int(time.time() - start_monitoring_time)
+                
+                if current_length > last_length:
+                    last_length = current_length
+                    stable_seconds = 0
+                    if elapsed % 5 == 0:
+                        print(f"   ... Growing ({current_length} chars, {elapsed}s) ...")
+                else:
+                    stable_seconds += 1
+                
+                time.sleep(1)
+            
+            print(f"   ✅ Generation finished (stable for 15s, total {elapsed}s).")
+            
+            # 5. EXTRACTION
+            print("   Extracting text...")
             last_model_turn.hover()
             
             more_btn = last_model_turn.locator("button[aria-label='Open options']").first

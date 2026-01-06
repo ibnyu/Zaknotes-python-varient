@@ -100,7 +100,8 @@ def test_generate_notes_success(mock_bot):
     
     with patch('os.path.exists', return_value=True), \
          patch('builtins.open', MagicMock()), \
-         patch('src.bot_engine.PdfConverter', MagicMock()):
+         patch('src.bot_engine.PdfConverter', MagicMock()), \
+         patch('time.sleep', MagicMock()):
         
         text, pdf_path = mock_bot.generate_notes("dummy.mp3")
         
