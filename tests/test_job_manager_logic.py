@@ -67,13 +67,21 @@ class TestJobManager(unittest.TestCase):
         self.manager.history.append({
             "id": "2", "name": "Failed Job", "url": "http://f.com", "status": "failed"
         })
-        # 3. Completed Job (Should NOT be included)
+        # 3. Downloading Job
         self.manager.history.append({
-            "id": "3", "name": "Done Job", "url": "http://d.com", "status": "completed"
+            "id": "3", "name": "Downloading Job", "url": "http://dl.com", "status": "downloading"
         })
-        # 4. Cancelled Job (Should NOT be included)
+        # 4. Processing Job
         self.manager.history.append({
-            "id": "4", "name": "Cancelled Job", "url": "http://c.com", "status": "cancelled"
+            "id": "4", "name": "Processing Job", "url": "http://pr.com", "status": "processing"
+        })
+        # 5. Completed Job (Should NOT be included)
+        self.manager.history.append({
+            "id": "5", "name": "Done Job", "url": "http://d.com", "status": "completed"
+        })
+        # 6. Cancelled Job (Should NOT be included)
+        self.manager.history.append({
+            "id": "6", "name": "Cancelled Job", "url": "http://c.com", "status": "cancelled"
         })
         
         self.manager.save_history()
@@ -83,20 +91,20 @@ class TestJobManager(unittest.TestCase):
         
         # Assert
         ids = [j['id'] for j in to_process]
-        self.assertIn("1", ids, "Pending job should be processed")
-        self.assertIn("2", ids, "Failed job should be retried")
-        self.assertNotIn("3", ids, "Completed job should be ignored")
-        self.assertNotIn("4", ids, "Cancelled job should be ignored")
-        self.assertEqual(len(to_process), 2)
+        self.assertIn("1", ids)
+        self.assertIn("2", ids)
+        self.assertIn("3", ids)
+        self.assertIn("4", ids)
+        self.assertNotIn("5", ids)
+        self.assertNotIn("6", ids)
+        self.assertEqual(len(to_process), 4)
 
     def test_cancel_pending_clears_failed_jobs(self):
         # Setup
-        self.manager.history.append({
-            "id": "1", "name": "Pending Job", "url": "p.com", "status": "queue"
-        })
-        self.manager.history.append({
-            "id": "2", "name": "Failed Job", "url": "f.com", "status": "failed"
-        })
+        self.manager.history.append({"id": "1", "status": "queue"})
+        self.manager.history.append({"id": "2", "status": "failed"})
+        self.manager.history.append({"id": "3", "status": "downloading"})
+        self.manager.history.append({"id": "4", "status": "processing"})
         self.manager.save_history()
         
         # Act
@@ -104,7 +112,7 @@ class TestJobManager(unittest.TestCase):
         
         # Assert
         for job in self.manager.history:
-            self.assertEqual(job['status'], 'cancelled', f"Job {job['id']} should be cancelled")
+            self.assertEqual(job['status'], 'cancelled')
 
 if __name__ == '__main__':
     unittest.main()

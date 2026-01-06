@@ -27,15 +27,17 @@ class JobManager:
 
     def get_pending_from_last_150(self):
         """
-        Return list of jobs with status 'queue' OR 'failed' (for retry).
+        Return list of jobs with status 'queue', 'failed', 'downloading', or 'processing' (for retry).
         """
-        pending = [job for job in self.history if job.get('status') in ['queue', 'failed']]
+        target_statuses = ['queue', 'failed', 'downloading', 'processing']
+        pending = [job for job in self.history if job.get('status') in target_statuses]
         return pending
 
     def cancel_pending(self):
-        """Cancel ALL pending and failed jobs in history"""
+        """Cancel ALL pending, failed, and stuck jobs in history"""
+        target_statuses = ['queue', 'failed', 'downloading', 'processing']
         for job in self.history:
-            if job.get('status') in ['queue', 'failed']:
+            if job.get('status') in target_statuses:
                 job['status'] = 'cancelled'
         self.save_history()
 

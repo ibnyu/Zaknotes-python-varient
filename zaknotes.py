@@ -31,10 +31,10 @@ def run_processing_pipeline(manager):
     pending_jobs = manager.get_pending_from_last_150()
     
     if not pending_jobs:
-        print("📭 No pending or failed jobs in queue.")
+        print("📭 No old jobs (pending/failed/stuck) in queue.")
         return
 
-    print(f"📂 Found {len(pending_jobs)} pending/failed jobs to process.")
+    print(f"📂 Found {len(pending_jobs)} old jobs to process.")
     bot = AIStudioBot()
     try:
         for job in pending_jobs:
@@ -47,10 +47,10 @@ def start_note_generation():
     
     while True:
         print("\n--- Note Generation Sub-Menu ---")
-        print("1. Start New Jobs (Cancel Queue/Failed)")
+        print("1. Start New Jobs (Cancel Old Jobs)")
         print("2. Start New Jobs (Add to Queue)")
-        print("3. Cancel All Queue/Failed Jobs")
-        print("4. Process Queue & Retry Failed Jobs")
+        print("3. Cancel All Old Jobs")
+        print("4. Process Old Jobs")
         print("5. Back to Main Menu")
         print("--------------------------------")
         
@@ -58,7 +58,7 @@ def start_note_generation():
         
         if sub_choice == '1':
             manager.cancel_pending()
-            print("✅ Old queue/failed jobs cancelled.")
+            print("✅ Old jobs cancelled.")
             file_names = input("Give me the file names (separated by comma/pipe/newline): ")
             urls = input("Give the URLS for the files: ")
             if file_names.strip() and urls.strip():
@@ -76,7 +76,7 @@ def start_note_generation():
             
         elif sub_choice == '3':
             manager.cancel_pending()
-            print("✅ All queue/failed jobs cancelled.")
+            print("✅ All old jobs cancelled.")
             break
             
         elif sub_choice == '4':
