@@ -145,12 +145,23 @@ class AIStudioBot:
             raise
 
     def _get_clean_text_length(self, locator):
-        """Calculates text length excluding 'Thinking' blocks."""
+        """Calculates text length excluding 'Thinking' blocks and UI labels."""
         return locator.evaluate("""(element) => {
-            const clone = element.cloneNode(true);
-            const thoughts = clone.querySelectorAll('ms-thought-chunk');
-            thoughts.forEach(t => t.remove());
-            return clone.innerText.trim().length;
+            // Target only the prompt chunks which contain the actual response
+            const chunks = element.querySelectorAll('ms-prompt-chunk');
+            let totalLength = 0;
+            
+            chunks.forEach(chunk => {
+                const clone = chunk.cloneNode(true);
+                // Remove thinking blocks
+                const thoughts = clone.querySelectorAll('ms-thought-chunk');
+                thoughts.forEach(t => t.remove());
+                
+                // Get text from the cleaned chunk
+                totalLength += clone.innerText.trim().length;
+            });
+            
+            return totalLength;
         }""")
 
     def generate_notes(self, audio_path):
