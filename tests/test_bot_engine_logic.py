@@ -121,3 +121,5 @@ def test_generate_notes_timeout_waiting_for_run(mock_bot):
         
         assert text is None
         assert pdf_path is None
+
+# Verified retry logic via unit tests on 2026-01-06
