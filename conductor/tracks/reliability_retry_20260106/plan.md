@@ -12,7 +12,7 @@ Focus: Identifying and fixing why the bot stalls during model/system instruction
 ## Phase 2: AI Response Reliability
 Focus: Preventing empty PDFs by ensuring the AI has finished generating content.
 
-- [ ] Task: Implement 2-second mandatory sleep after file upload completion in `src/bot_engine.py`.
+- [x] Task: Implement 2-second mandatory sleep after file upload completion in `src/bot_engine.py`. 475b565
 - [ ] Task: Implement AI response growth monitoring loop in `src/bot_engine.py`.
     - Sub-task: Logic to detect response block visibility.
     - Sub-task: Loop to compare content length every 1 second.
