@@ -13,11 +13,11 @@ Focus: Identifying and fixing why the bot stalls during model/system instruction
 Focus: Preventing empty PDFs by ensuring the AI has finished generating content.
 
 - [x] Task: Implement 2-second mandatory sleep after file upload completion in `src/bot_engine.py`. 475b565
-- [ ] Task: Implement AI response growth monitoring loop in `src/bot_engine.py`.
+- [x] Task: Implement AI response growth monitoring loop in `src/bot_engine.py`. 9168cdf
     - Sub-task: Logic to detect response block visibility.
     - Sub-task: Loop to compare content length every 1 second.
     - Sub-task: Implement 15-second inactivity timeout to stop waiting.
-- [ ] Task: Write unit tests for the growth monitoring logic (using mocks for response content).
+- [x] Task: Write unit tests for the growth monitoring logic (using mocks for response content). 9168cdf
 - [ ] Task: Conductor - User Manual Verification 'AI Response Reliability' (Protocol in workflow.md)
 
 ## Phase 3: Job Management & Retry Logic
