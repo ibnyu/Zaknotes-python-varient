@@ -1,13 +1,13 @@
 # Plan: Enhanced Reliability and Job Retry Logic
 
-## Phase 1: UI Stability & Root Cause Investigation
+## Phase 1: UI Stability & Root Cause Investigation [checkpoint: 0c8b22f]
 Focus: Identifying and fixing why the bot stalls during model/system instruction selection.
 
 - [x] Task: Investigate `src/ui_elements/` and `src/bot_engine.py` to identify cause of selection hangs.
 - [x] Task: Implement direct fix for Model/System Instruction selection logic. 1931a5c
 - [x] Task: Write/Update unit tests for UI interaction components to ensure stability. b82bc75
 - [x] Task: Verify fix manually by running the bot through multiple model selection cycles. 3b4f13e
-- [ ] Task: Conductor - User Manual Verification 'UI Stability & Root Cause Investigation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'UI Stability & Root Cause Investigation' (Protocol in workflow.md) 0c8b22f
 
 ## Phase 2: AI Response Reliability
 Focus: Preventing empty PDFs by ensuring the AI has finished generating content.
