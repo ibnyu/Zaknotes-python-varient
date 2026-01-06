@@ -56,5 +56,22 @@ class TestRetryLogic(unittest.TestCase):
         self.assertNotIn("4", ids, "Cancelled job should be ignored")
         self.assertEqual(len(to_process), 2)
 
+    def test_cancel_pending_clears_failed_jobs(self):
+        # Setup
+        self.manager.history.append({
+            "id": "1", "name": "Pending Job", "url": "p.com", "status": "queue"
+        })
+        self.manager.history.append({
+            "id": "2", "name": "Failed Job", "url": "f.com", "status": "failed"
+        })
+        self.manager.save_history()
+        
+        # Act
+        self.manager.cancel_pending()
+        
+        # Assert
+        for job in self.manager.history:
+            self.assertEqual(job['status'], 'cancelled', f"Job {job['id']} should be cancelled")
+
 if __name__ == '__main__':
     unittest.main()

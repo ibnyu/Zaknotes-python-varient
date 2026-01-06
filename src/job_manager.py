@@ -33,9 +33,9 @@ class JobManager:
         return pending
 
     def cancel_pending(self):
-        """Cancel ALL pending jobs in history"""
+        """Cancel ALL pending and failed jobs in history"""
         for job in self.history:
-            if job.get('status') == 'queue':
+            if job.get('status') in ['queue', 'failed']:
                 job['status'] = 'cancelled'
         self.save_history()
 
