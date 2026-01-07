@@ -3,21 +3,12 @@ import os
 import time
 import socket
 import sys
+import shutil
 from playwright.sync_api import sync_playwright
 
 # --- CONFIGURATION ---
-BROWSER_PATHS = [
-    "/usr/bin/chromium",
-    "/usr/bin/chromium-browser",
-    "/snap/bin/chromium",
-    "/usr/bin/google-chrome",
-    "/usr/bin/google-chrome-stable",
-    "/usr/bin/brave-browser",
-    "/usr/bin/brave-browser-stable",
-    "/usr/bin/brave",
-    "/snap/bin/brave",
-    "/opt/brave.com/brave/brave-browser"
-]
+# Default search names for Chromium-based browsers
+CHROMIUM_NAMES = ["chromium", "chromium-browser"]
 
 # Absolute path is safer for string matching in process list
 PROFILE_DIR = os.path.abspath(os.path.join(os.getcwd(), "browser_profile"))
@@ -30,6 +21,26 @@ class BrowserDriver:
         self.playwright = None
         self.browser = None
         self.context = None
+
+    def _find_chromium_executable(self):
+        """
+        Attempts to find a Chromium executable in the system PATH.
+        If not found, prompts the user for a manual path.
+        """
+        # 1. Try automated detection
+        for name in CHROMIUM_NAMES:
+            path = shutil.which(name)
+            if path:
+                return path
+
+        # 2. Interactive Fallback
+        print("\n⚠️  Chromium executable not found in system PATH.")
+        manual_path = input("👉 Please enter the full path to your Chromium executable: ").strip()
+        
+        if manual_path and os.path.exists(manual_path):
+            return manual_path
+        
+        return None
 
     def is_port_open(self, port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -88,14 +99,10 @@ class BrowserDriver:
         print(f"📂 Profile Location: {PROFILE_DIR}")
         
         # Find Executable
-        browser_exe = None
-        for path in BROWSER_PATHS:
-            if os.path.exists(path):
-                browser_exe = path
-                break
+        browser_exe = self._find_chromium_executable()
         
         if not browser_exe:
-            raise Exception("❌ Could not find Chromium/Chrome/Brave executable.")
+            raise Exception("❌ Could not find Chromium executable.")
 
         # Optimization Flags
         cmd = [
