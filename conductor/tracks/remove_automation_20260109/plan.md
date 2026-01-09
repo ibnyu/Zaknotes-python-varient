@@ -1,6 +1,6 @@
 # Plan: Remove Browser Automation and UI Elements
 
-## Phase 1: Logic Replacement & Placeholder Implementation
+## Phase 1: Logic Replacement & Placeholder Implementation [checkpoint: eefa041]
 - [x] Task: Create `tests/test_placeholders.py` to verify that `zaknotes.py` functions (e.g., `refresh_browser_profile`, `launch_manual_browser`) can be called without error and produce expected log output. 1bf68a4
 - [x] Task: Modify `zaknotes.py` to remove imports of `BrowserDriver`, `AIStudioBot`, `process_job` and replace their usage with log messages (e.g., "Browser automation placeholder triggered"). 1bf68a4
 - [x] Task: Verify that `zaknotes.py` no longer references the to-be-deleted modules. 1bf68a4
