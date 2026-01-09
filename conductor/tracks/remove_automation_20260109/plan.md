@@ -6,7 +6,7 @@
 - [x] Task: Verify that `zaknotes.py` no longer references the to-be-deleted modules. 1bf68a4
 - [x] Task: Conductor - User Manual Verification 'Logic Replacement & Placeholder Implementation' (Protocol in workflow.md) 1bf68a4
 
-## Phase 2: Selenium to Playwright Migration
+## Phase 2: Selenium to Playwright Migration [checkpoint: 4da882a]
 - [x] Task: Create `tests/test_find_vimeo_url.py` to test the current Vimeo URL extraction logic (Red Phase). c44aa8d
 - [x] Task: Refactor `src/find_vimeo_url.py` to use `playwright` instead of `selenium`. c44aa8d
 - [x] Task: Verify that `src/find_vimeo_url.py` correctly extracts Vimeo URLs using Playwright. c44aa8d
