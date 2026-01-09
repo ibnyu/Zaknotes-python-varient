@@ -20,7 +20,7 @@
 - [x] Task: Delete `tests/` directory (excluding the newly created `test_placeholders.py` and `test_find_vimeo_url.py`). *I will back up these specific test files, delete the rest of `tests/`, and restore them.* bbfba2f
 - [x] Task: Conductor - User Manual Verification 'Component Removal' (Protocol in workflow.md) bbfba2f
 
-## Phase 4: Cleanup & Verification
+## Phase 4: Cleanup & Verification [checkpoint: 67abb30]
 - [x] Task: Audit `requirements.txt` and remove any dependencies that are now strictly unused (like `webdriver-manager` if present). 2317fd4
 - [x] Task: Final verification that the application starts and video download references are intact. 2317fd4
 - [x] Task: Conductor - User Manual Verification 'Cleanup & Verification' (Protocol in workflow.md) 2317fd4
