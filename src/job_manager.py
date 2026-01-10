@@ -41,6 +41,14 @@ class JobManager:
                 job['status'] = 'cancelled'
         self.save_history()
 
+    def fail_pending(self):
+        """Mark ALL pending, downloading, or processing jobs as failed"""
+        target_statuses = ['queue', 'downloading', 'processing']
+        for job in self.history:
+            if job.get('status') in target_statuses:
+                job['status'] = 'failed'
+        self.save_history()
+
     def smart_split(self, text):
         """Splits by comma/pipe/newline but respects (groups)"""
         if not text: return []
