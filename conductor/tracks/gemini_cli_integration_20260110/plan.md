@@ -4,11 +4,11 @@ This plan outlines the steps to transition the Zaknotes pipeline from browser-ba
 
 ## Phase 1: Environment Setup & Configuration
 - [x] Task: Prepare project structure by creating the `pdfs/` directory. ba412ce
-- [ ] Task: Update `zaknotes.py` CLI menu:
+- [x] Task: Update `zaknotes.py` CLI menu: b224d9d
     - Remove "Refresh Browser Profile".
     - Add "Configure Gemini Models" to allow setting models for transcription and note generation.
     - Add "Cleanup Stranded Audio Chunks" utility.
-- [ ] Task: Implement `ConfigManager` to persist model preferences and other settings in a `config.json` file.
+- [~] Task: Implement `ConfigManager` to persist model preferences and other settings in a `config.json` file.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup & Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Audio Processing Module (ffmpeg Integration)
