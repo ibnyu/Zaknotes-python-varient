@@ -18,6 +18,31 @@ class AudioProcessor:
         return size_bytes < limit_bytes
 
     @staticmethod
+    def get_bitrate(file_path: str) -> int:
+        """Returns the bitrate in bits per second."""
+        try:
+            command = [
+                "ffprobe", "-v", "error", "-select_streams", "a:0",
+                "-show_entries", "stream=bit_rate", "-of", "default=noprint_wrappers=1:nokey=1",
+                file_path
+            ]
+            result = subprocess.run(command, check=True, capture_output=True, text=True)
+            val = result.stdout.strip()
+            if val == "N/A" or not val:
+                 # Try format bitrate if stream bitrate is N/A
+                command = [
+                    "ffprobe", "-v", "error", "-show_entries", "format=bit_rate", 
+                    "-of", "default=noprint_wrappers=1:nokey=1",
+                    file_path
+                ]
+                result = subprocess.run(command, check=True, capture_output=True, text=True)
+                val = result.stdout.strip()
+            
+            return int(val) if val and val != "N/A" else 0
+        except (subprocess.CalledProcessError, ValueError):
+            return 0
+
+    @staticmethod
     def reencode_audio(input_path: str, output_path: str, bitrate: str = "16k") -> bool:
         """Re-encodes the audio to a lower bitrate using ffmpeg."""
         try:
@@ -50,15 +75,12 @@ class AudioProcessor:
             
             # Find the created files
             directory = os.path.dirname(output_pattern) or "."
-            # Base name without the format specifier
-            # Handle cases like chunk_%03d.mp3
             base_parts = os.path.basename(output_pattern).split("%")
             prefix = base_parts[0]
             
             chunks = []
             for f in sorted(os.listdir(directory)):
                 if f.startswith(prefix) and f != os.path.basename(input_path):
-                     # Check if it matches the pattern (roughly)
                      chunks.append(os.path.join(directory, f))
             return chunks
             
@@ -72,7 +94,7 @@ class AudioProcessor:
         Orchestrates the audio processing:
         1. Check size. If < limit, return [input_path].
         2. Else, split into chunks.
-        3. For each chunk, if still > limit, re-encode with lower bitrate.
+        3. For each chunk, iteratively reduce bitrate by 10kbps until < limit or min bitrate reached.
         4. Return list of chunk paths.
         """
         if not os.path.exists(output_dir):
@@ -90,21 +112,30 @@ class AudioProcessor:
         
         final_chunks = []
         for chunk in chunks:
-            if AudioProcessor.is_under_limit(chunk, limit_mb):
-                final_chunks.append(chunk)
-            else:
-                # Still too large, re-encode
-                reencoded_path = chunk.replace(extension, f"_reencoded{extension}")
-                if AudioProcessor.reencode_audio(chunk, reencoded_path, bitrate="16k"):
-                    if AudioProcessor.is_under_limit(reencoded_path, limit_mb):
-                        final_chunks.append(reencoded_path)
-                        try: os.remove(chunk)
-                        except: pass
-                    else:
-                        final_chunks.append(reencoded_path)
-                        try: os.remove(chunk)
-                        except: pass
+            # Iteratively reduce bitrate if needed
+            while not AudioProcessor.is_under_limit(chunk, limit_mb):
+                current_bitrate = AudioProcessor.get_bitrate(chunk)
+                if current_bitrate == 0:
+                    current_bitrate = 128000 # Fallback default
+                
+                # Reduce by 10kbps (10,000 bps)
+                new_bitrate_val = current_bitrate - 10000
+                
+                # Minimum floor: 32kbps
+                if new_bitrate_val < 32000:
+                    print(f"Warning: Chunk {chunk} is still too large ({AudioProcessor.get_file_size(chunk)} bytes) but bitrate is low ({current_bitrate}). Skipping further reduction.")
+                    break
+                
+                reencoded_path = chunk + ".tmp" + extension
+                if AudioProcessor.reencode_audio(chunk, reencoded_path, bitrate=str(new_bitrate_val)):
+                    try:
+                        os.remove(chunk)
+                        os.rename(reencoded_path, chunk)
+                    except OSError:
+                        pass
                 else:
-                    final_chunks.append(chunk)
+                    break # Re-encode failed
+            
+            final_chunks.append(chunk)
                     
         return final_chunks

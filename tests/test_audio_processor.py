@@ -30,6 +30,13 @@ def test_get_file_size(dummy_file):
     size = AudioProcessor.get_file_size(dummy_file)
     assert size == 1024
 
+def test_get_bitrate(real_audio_file):
+    """Test retrieving bitrate."""
+    # real_audio_file was created with 128k
+    bitrate = AudioProcessor.get_bitrate(real_audio_file)
+    # ffmpeg might not match exactly 128000 due to encoding, but should be close
+    assert 120000 < bitrate < 140000
+
 def test_is_under_limit(dummy_file):
     """Test file size limit validation."""
     # 1KB is under 1MB limit
