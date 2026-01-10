@@ -4,6 +4,7 @@ from src.audio_processor import AudioProcessor
 from src.transcription_service import TranscriptionService
 from src.note_generation_service import NoteGenerationService
 from src.pdf_converter_py import PdfConverter
+from src.cleanup_service import FileCleanupService
 
 class ProcessingPipeline:
     def __init__(self, config_manager):
@@ -14,6 +15,12 @@ class ProcessingPipeline:
         """
         Executes the full pipeline for a single job.
         """
+        audio_path = None
+        chunks = []
+        transcript_path = None
+        notes_path = None
+        html_path = None
+        
         try:
             # 1. Download
             job['status'] = 'downloading'
@@ -53,20 +60,21 @@ class ProcessingPipeline:
 
             # 5. PDF Conversion
             safe_name = job['name'].replace(" ", "_").replace("/", "-")
-            # Ensure pdfs directory exists
             if not os.path.exists("pdfs"):
                 os.makedirs("pdfs", exist_ok=True)
                 
             final_pdf_path = os.path.join("pdfs", f"{safe_name}.pdf")
-            
-            # Intermediate HTML (Pandoc requirement)
             html_path = os.path.join(temp_dir, f"{job['id']}_temp.html")
             
             self.pdf_converter.convert_md_to_html(notes_path, html_path)
             self.pdf_converter.convert_html_to_pdf(html_path, final_pdf_path)
             
             # 6. Cleanup
-            self.cleanup(audio_path, chunks, transcript_path, notes_path, html_path)
+            files_to_cleanup = [audio_path, transcript_path, notes_path, html_path]
+            for c in chunks:
+                if c != audio_path:
+                    files_to_cleanup.append(c)
+            FileCleanupService.cleanup_job_files(files_to_cleanup)
             
             job['status'] = 'completed'
             print(f"✅ Job '{job['name']}' completed successfully. PDF: {final_pdf_path}")
@@ -75,19 +83,12 @@ class ProcessingPipeline:
         except Exception as e:
             print(f"❌ Exception in pipeline for job {job['id']}: {e}")
             job['status'] = 'failed'
+            # Cleanup whatever we can on failure? 
+            # User says: "make sure after prossesing each link there should be only the pdf left"
+            # This implies even on failure we should probably clean up chunks/audio.
+            files_to_cleanup = [audio_path, transcript_path, notes_path, html_path]
+            for c in chunks:
+                if c != audio_path:
+                    files_to_cleanup.append(c)
+            FileCleanupService.cleanup_job_files(files_to_cleanup)
             return False
-
-    def cleanup(self, original_audio, chunks, transcript, notes, html):
-        """Removes intermediate files."""
-        files_to_remove = [original_audio, transcript, notes, html]
-        for c in chunks:
-            if c != original_audio:
-                files_to_remove.append(c)
-        
-        for f in files_to_remove:
-            if f and os.path.exists(f):
-                try:
-                    os.remove(f)
-                    print(f"Deleted intermediate file: {f}")
-                except Exception as e:
-                    print(f"Failed to delete {f}: {e}")
