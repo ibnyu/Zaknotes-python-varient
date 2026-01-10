@@ -11,17 +11,15 @@ class TranscriptionService:
         Transcribes a list of audio chunks and appends text to output_file.
         Returns True if all chunks succeeded, False otherwise.
         """
-        # Ensure directory exists
         out_dir = os.path.dirname(output_file)
         if out_dir and not os.path.exists(out_dir):
             os.makedirs(out_dir, exist_ok=True)
 
-        # Clear output file first
         if os.path.exists(output_file):
             os.remove(output_file)
 
-        for chunk in chunks:
-            # Use format to inject chunk path
+        for i, chunk in enumerate(chunks):
+            print(f"      - Processing chunk {i+1}/{len(chunks)}...")
             prompt = TRANSCRIPTION_PROMPT.format(chunk=chunk)
             args = [
                 "-m", model,
@@ -32,19 +30,32 @@ class TranscriptionService:
             result = GeminiCLIWrapper.run_command(args)
             
             if not result['success']:
-                print(f"Transcription failed for chunk {chunk}: {result.get('stderr')}")
+                print(f"      ❌ Gemini CLI failed for chunk {i+1}: {result.get('stderr')}")
                 return False
                 
             try:
-                data = json.loads(result['stdout'])
+                stdout_str = result['stdout']
+                if not stdout_str:
+                    print(f"      ❌ Empty stdout for chunk {i+1}")
+                    return False
+                
+                # Check for truncation
+                if len(stdout_str) >= 65535:
+                    print(f"      ⚠️ Warning: Output for chunk {i+1} is {len(stdout_str)} bytes. It might be truncated.")
+
+                data = json.loads(stdout_str)
                 text = data.get("response", "")
                 if text:
                     with open(output_file, 'a', encoding='utf-8') as f:
                         f.write(text)
+                        f.write("\n") # Add newline between chunks
                 else:
-                    print(f"Warning: Empty response for chunk {chunk}")
-            except json.JSONDecodeError:
-                print(f"Error: Invalid JSON from gemini for chunk {chunk}")
+                    print(f"      ⚠️ Warning: No 'response' key in JSON for chunk {i+1}")
+            except json.JSONDecodeError as e:
+                print(f"      ❌ JSON Decode Error for chunk {i+1}: {e}")
+                # Log a bit of the stdout to help debug
+                preview = stdout_str[:100] + "..." + stdout_str[-100:] if len(stdout_str) > 200 else stdout_str
+                print(f"      - Output Preview: {preview}")
                 return False
                 
         return True

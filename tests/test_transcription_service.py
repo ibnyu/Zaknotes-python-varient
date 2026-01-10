@@ -17,7 +17,7 @@ def output_file(tmp_path):
 def test_transcribe_chunks_success(mock_run, output_file):
     """Test successful transcription of multiple chunks."""
     mock_run.side_effect = [
-        {"success": True, "stdout": json.dumps({"response": "Part 1 "})},
+        {"success": True, "stdout": json.dumps({"response": "Part 1"})},
         {"success": True, "stdout": json.dumps({"response": "Part 2"})}
     ]
     
@@ -35,7 +35,8 @@ def test_transcribe_chunks_success(mock_run, output_file):
     
     with open(output_file, 'r') as f:
         content = f.read()
-    assert "Part 1 Part 2" == content
+    # Now includes newlines between chunks
+    assert "Part 1\nPart 2\n" == content
 
 @patch('src.gemini_wrapper.GeminiCLIWrapper.run_command')
 def test_transcribe_chunks_failure(mock_run, output_file):
@@ -46,6 +47,3 @@ def test_transcribe_chunks_failure(mock_run, output_file):
     success = TranscriptionService.transcribe_chunks(chunks, "model-x", output_file)
     
     assert success is False
-    # Depending on implementation, file might exist but be partial, or cleaned up.
-    # The spec says "Skip the failed job/chunk and move to the next one (Fail-Fast per job)".
-    # This implies the whole transcription task fails.

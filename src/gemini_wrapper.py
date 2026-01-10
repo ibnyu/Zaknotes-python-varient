@@ -8,27 +8,39 @@ class GeminiCLIWrapper:
         Runs the gemini CLI with the provided arguments.
         Returns a dictionary with success status, stdout, and stderr.
         """
-        # Ensure we don't double-add 'gemini' if caller provided it, though test assumes we prepend
         if args and args[0] == "gemini":
             command = args
         else:
             command = ["gemini"] + args
         
         try:
+            # We capture as bytes to handle potential encoding issues manually
             result = subprocess.run(
                 command,
                 capture_output=True,
-                text=True,
+                text=False,
                 check=True
             )
+            # Use utf-8 but replace errors to avoid crashing on truncated multibyte chars
+            stdout = result.stdout.decode('utf-8', errors='replace')
+            stderr = result.stderr.decode('utf-8', errors='replace')
+            
             return {
                 "success": True,
-                "stdout": result.stdout,
-                "stderr": result.stderr
+                "stdout": stdout,
+                "stderr": stderr
             }
         except subprocess.CalledProcessError as e:
+            stdout = e.stdout.decode('utf-8', errors='replace') if e.stdout else ""
+            stderr = e.stderr.decode('utf-8', errors='replace') if e.stderr else str(e)
             return {
                 "success": False,
-                "stdout": e.stdout if hasattr(e, 'stdout') else "",
-                "stderr": e.stderr if hasattr(e, 'stderr') else str(e)
+                "stdout": stdout,
+                "stderr": stderr
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "stdout": "",
+                "stderr": str(e)
             }

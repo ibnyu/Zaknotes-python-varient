@@ -11,10 +11,9 @@ class NoteGenerationService:
         Saves the notes to output_path.
         """
         if not os.path.exists(transcript_path):
-            print(f"Error: Transcript file not found: {transcript_path}")
+            print(f"      ❌ Transcript file not found: {transcript_path}")
             return False
 
-        # Use provided prompt text or fall back to default from prompts.py
         if prompt_text is None:
             prompt_text = NOTE_GENERATION_PROMPT
 
@@ -30,14 +29,14 @@ class NoteGenerationService:
         result = GeminiCLIWrapper.run_command(args)
         
         if not result['success']:
-            print(f"Note generation failed: {result.get('stderr')}")
+            print(f"      ❌ Gemini CLI failed: {result.get('stderr')}")
             return False
             
         try:
-            data = json.loads(result['stdout'])
+            stdout_str = result['stdout']
+            data = json.loads(stdout_str)
             notes = data.get("response", "")
             if notes:
-                # Ensure output dir exists
                 out_dir = os.path.dirname(output_path)
                 if out_dir and not os.path.exists(out_dir):
                     os.makedirs(out_dir, exist_ok=True)
@@ -46,8 +45,8 @@ class NoteGenerationService:
                     f.write(notes)
                 return True
             else:
-                print("Warning: Empty response for note generation")
+                print("      ⚠️ Warning: No 'response' key in JSON for notes")
                 return False
-        except json.JSONDecodeError:
-            print("Error: Invalid JSON from gemini for note generation")
+        except json.JSONDecodeError as e:
+            print(f"      ❌ JSON Decode Error for notes: {e}")
             return False

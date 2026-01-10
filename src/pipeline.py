@@ -23,6 +23,7 @@ class ProcessingPipeline:
         
         try:
             # 1. Download
+            print(f"📥 [1/5] Downloading audio for: {job['name']}...")
             job['status'] = 'downloading'
             audio_path = download_audio(job)
             if not audio_path or not os.path.exists(audio_path):
@@ -31,6 +32,7 @@ class ProcessingPipeline:
                 return False
 
             # 2. Audio Processing
+            print(f"✂️ [2/5] Checking size and splitting audio: {audio_path}")
             job['status'] = 'processing'
             temp_dir = "temp"
             if not os.path.exists(temp_dir):
@@ -41,24 +43,30 @@ class ProcessingPipeline:
                 limit_mb=20, 
                 output_dir=temp_dir
             )
+            print(f"   - Audio split into {len(chunks)} chunk(s).")
             
             # 3. Transcription
+            print(f"📝 [3/5] Transcribing {len(chunks)} chunks using Gemini...")
             transcript_path = os.path.join(temp_dir, f"{job['id']}_transcript.txt")
             t_model = self.config.get("transcription_model")
             if not TranscriptionService.transcribe_chunks(chunks, t_model, transcript_path):
                 print(f"❌ Transcription failed for job: {job['name']}")
                 job['status'] = 'failed'
                 return False
+            print(f"   - Transcription complete: {transcript_path}")
 
             # 4. Note Generation
+            print(f"🗒️ [4/5] Generating study notes...")
             notes_path = os.path.join(temp_dir, f"{job['id']}_notes.md")
             n_model = self.config.get("note_generation_model")
             if not NoteGenerationService.generate(transcript_path, n_model, notes_path):
                 print(f"❌ Note generation failed for job: {job['name']}")
                 job['status'] = 'failed'
                 return False
+            print(f"   - Notes generated: {notes_path}")
 
             # 5. PDF Conversion
+            print(f"📄 [5/5] Converting notes to PDF...")
             safe_name = job['name'].replace(" ", "_").replace("/", "-")
             if not os.path.exists("pdfs"):
                 os.makedirs("pdfs", exist_ok=True)
@@ -70,6 +78,7 @@ class ProcessingPipeline:
             self.pdf_converter.convert_html_to_pdf(html_path, final_pdf_path)
             
             # 6. Cleanup
+            print(f"🧹 Cleaning up intermediate files...")
             files_to_cleanup = [audio_path, transcript_path, notes_path, html_path]
             for c in chunks:
                 if c != audio_path:
@@ -77,15 +86,13 @@ class ProcessingPipeline:
             FileCleanupService.cleanup_job_files(files_to_cleanup)
             
             job['status'] = 'completed'
-            print(f"✅ Job '{job['name']}' completed successfully. PDF: {final_pdf_path}")
+            print(f"✅ Job '{job['name']}' completed successfully! PDF: {final_pdf_path}")
             return True
 
         except Exception as e:
             print(f"❌ Exception in pipeline for job {job['id']}: {e}")
             job['status'] = 'failed'
-            # Cleanup whatever we can on failure? 
-            # User says: "make sure after prossesing each link there should be only the pdf left"
-            # This implies even on failure we should probably clean up chunks/audio.
+            # Cleanup whatever we can on failure
             files_to_cleanup = [audio_path, transcript_path, notes_path, html_path]
             for c in chunks:
                 if c != audio_path:
