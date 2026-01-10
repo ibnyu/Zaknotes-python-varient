@@ -21,8 +21,8 @@ This plan outlines the steps to transition the Zaknotes pipeline from browser-ba
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Audio Processing Module (ffmpeg Integration)' (Protocol in workflow.md)
 
 ## Phase 3: Gemini CLI Integration
-- [ ] Task: TDD - Implement `GeminiCLIWrapper.run_command` to handle subprocess execution of the `gemini` tool and capture JSON output/errors.
-- [ ] Task: TDD - Implement `TranscriptionService.transcribe_chunks` to process audio files/chunks, extract text from JSON, and append to a job-specific `.txt` file.
+- [x] Task: TDD - Implement `GeminiCLIWrapper.run_command` to handle subprocess execution of the `gemini` tool and capture JSON output/errors. c248cd9
+- [~] Task: TDD - Implement `TranscriptionService.transcribe_chunks` to process audio files/chunks, extract text from JSON, and append to a job-specific `.txt` file.
 - [ ] Task: TDD - Implement `NoteGenerationService.generate` to send the consolidated transcript to Gemini (using the specified prompt) and save the `.md` output.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Gemini CLI Integration' (Protocol in workflow.md)
 
