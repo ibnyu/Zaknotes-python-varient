@@ -35,8 +35,8 @@ This plan outlines the migration from the Gemini CLI to the official Google Gene
     - [x] Sub-task: Update pipeline to save Markdown output to a `notes/` directory.
 - [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md) 00375ca
 
-## Phase 5: Cleanup & Final Integration
+## Phase 5: Cleanup & Final Integration [checkpoint: f829428]
 - [x] Task: Remove `src/gemini_wrapper.py` and `src/pdf_converter_py.py`. c7535bc
-- [~] Task: Clean up `zaknotes.py` menu (remove model selector, old Gemini CLI refs).
-- [ ] Task: Verify overall flow and ensure quota tracking/resetting is triggered before each video.
-- [ ] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
+- [x] Task: Clean up `zaknotes.py` menu (remove model selector, old Gemini CLI refs). aa783d1
+- [x] Task: Verify overall flow and ensure quota tracking/resetting is triggered before each video. f829428
+- [x] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md) f829428
