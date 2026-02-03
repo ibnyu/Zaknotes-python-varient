@@ -36,7 +36,7 @@ This plan outlines the migration from the Gemini CLI to the official Google Gene
 - [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md) 00375ca
 
 ## Phase 5: Cleanup & Final Integration
-- [~] Task: Remove `src/gemini_wrapper.py` and `src/pdf_converter_py.py`.
-- [ ] Task: Clean up `zaknotes.py` menu (remove model selector, old Gemini CLI refs).
+- [x] Task: Remove `src/gemini_wrapper.py` and `src/pdf_converter_py.py`. c7535bc
+- [~] Task: Clean up `zaknotes.py` menu (remove model selector, old Gemini CLI refs).
 - [ ] Task: Verify overall flow and ensure quota tracking/resetting is triggered before each video.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
