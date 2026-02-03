@@ -12,8 +12,8 @@ This plan outlines the overhaul of `README.md` to provide a helpful, step-by-ste
 - [x] Task: Create the "Happy Path" Quick Start Guide. 5d74522
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 65869df
 
-## Phase 3: Feature Deep-Dive & Troubleshooting
+## Phase 3: Feature Deep-Dive & Troubleshooting [checkpoint: 52021d8]
 - [x] Task: Write exhaustive documentation for all `zaknotes.py` menu options and the Note Generation sub-menu. 9f4f6ea
 - [x] Task: Draft the Troubleshooting section covering 429 errors and download issues. 6404883
 - [x] Task: Perform a final formatting and proofreading pass (Markdown rendering check). 6404883
-- [~] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) 52021d8
