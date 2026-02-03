@@ -7,13 +7,13 @@ This plan outlines the overhaul of `README.md` to provide a helpful, step-by-ste
 - [x] Task: Verify Arch Linux specific package names for `ffmpeg`, `nodejs`, and `uv`.
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) 17800dd
 
-## Phase 2: Core Content Drafting
+## Phase 2: Core Content Drafting [checkpoint: 65869df]
 - [x] Task: Write the Introduction and detailed Arch Linux Installation & Prerequisites sections. b6be1b6
 - [x] Task: Create the "Happy Path" Quick Start Guide. 5d74522
-- [~] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 65869df
 
 ## Phase 3: Feature Deep-Dive & Troubleshooting
-- [ ] Task: Write exhaustive documentation for all `zaknotes.py` menu options and the Note Generation sub-menu.
+- [~] Task: Write exhaustive documentation for all `zaknotes.py` menu options and the Note Generation sub-menu.
 - [ ] Task: Draft the Troubleshooting section covering 429 errors and download issues.
 - [ ] Task: Perform a final formatting and proofreading pass (Markdown rendering check).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
