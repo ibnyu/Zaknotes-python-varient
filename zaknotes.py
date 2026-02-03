@@ -55,6 +55,25 @@ def manage_api_keys():
         else:
             print("❌ Invalid choice.")
 
+def configure_audio_chunking():
+    config = ConfigManager()
+    curr_time = config.get("segment_time", 1800)
+    print("\n--- Configure Audio Chunking Time ---")
+    print(f"Current Chunk Time: {curr_time}s ({curr_time/60:.1f}m)")
+    
+    val = input(f"Enter new chunk time in seconds (leave blank to keep '{curr_time}'): ").strip()
+    if val:
+        try:
+            val_int = int(val)
+            if val_int < 60:
+                print("❌ Chunk time must be at least 60 seconds.")
+            else:
+                config.set("segment_time", val_int)
+                config.save()
+                print("✅ Configuration saved.")
+        except ValueError:
+            print("❌ Invalid input. Please enter a number.")
+
 def cleanup_stranded_chunks():
     print("\n🧹 Cleaning up all intermediate files...")
     FileCleanupService.cleanup_all_temp_files()
@@ -138,22 +157,25 @@ def main_menu():
         print("==============================")
         print("1. Start Note Generation")
         print("2. Manage API Keys")
-        print("3. Cleanup Stranded Audio Chunks")
-        print("4. Refresh Cookies")
-        print("5. Exit")
+        print("3. Configure Audio Chunking")
+        print("4. Cleanup Stranded Audio Chunks")
+        print("5. Refresh Cookies")
+        print("6. Exit")
         print("------------------------------")
         
-        choice = input("Enter your choice (1-5): ").strip()
+        choice = input("Enter your choice (1-6): ").strip()
         
         if choice == '1':
             start_note_generation()
         elif choice == '2':
             manage_api_keys()
         elif choice == '3':
-            cleanup_stranded_chunks()
+            configure_audio_chunking()
         elif choice == '4':
-            refresh_cookies()
+            cleanup_stranded_chunks()
         elif choice == '5':
+            refresh_cookies()
+        elif choice == '6':
             print("Goodbye!")
             break
         else:
