@@ -16,8 +16,8 @@ This plan outlines the migration from the Gemini CLI to the official Google Gene
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 8e1d2e3
 
 ## Phase 3: Gemini API Wrapper & Prompt Refactor
-- [~] Task: Modify `src/prompts.py` to remove file path references from `NOTE_GENERATION_PROMPT`.
-- [ ] Task: Create `src/gemini_api_wrapper.py` using `google-genai`.
+- [x] Task: Modify `src/prompts.py` to remove file path references from `NOTE_GENERATION_PROMPT`. dc3d2b8
+- [~] Task: Create `src/gemini_api_wrapper.py` using `google-genai`.
     - [ ] Sub-task: Implement `generate_content` method that handles API calls and key rotation.
     - [ ] Sub-task: Hardcode model names: `gemini-2.5-flash` and `gemini-3-flash-preview`.
 - [ ] Task: Update `src/transcription_service.py` and `src/note_generation_service.py` to use `GeminiAPIWrapper`.
