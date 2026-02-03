@@ -2,13 +2,13 @@
 
 This plan outlines the migration from the Gemini CLI to the official Google Generative AI API, including API key management, quota tracking, and output refactoring.
 
-## Phase 1: Environment & Dependency Setup
-- [x] Task: Add `google-genai` using `uv add google-genai`. a0d72aa
+## Phase 1: Environment & Dependency Setup [checkpoint: e0e215a]
+- [x] Task: Add `google-genai` using `uv add google-genai`. 7b480f7
 - [x] Task: Create `keys/` directory and ensure it is ignored by git. 9a28f6d
-- [~] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) e0e215a
 
 ## Phase 2: API Key & Quota Management
-- [ ] Task: Implement `src/api_key_manager.py` for managing keys and tracking usage.
+- [~] Task: Implement `src/api_key_manager.py` for managing keys and tracking usage.
     - [ ] Sub-task: Implement `APIKeyManager` class with `add_key`, `remove_key`, `list_keys` methods.
     - [ ] Sub-task: Implement `get_available_key(model)` logic with cycling and quota checking.
     - [ ] Sub-task: Implement `reset_quotas_if_needed()` using `worldtimeapi.org` or similar for PT midnight.
