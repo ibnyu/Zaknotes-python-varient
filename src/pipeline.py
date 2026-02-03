@@ -2,7 +2,6 @@ import os
 import time
 from src.downloader import download_audio
 from src.audio_processor import AudioProcessor
-from src.transcription_service import TranscriptionService
 from src.note_generation_service import NoteGenerationService
 from src.cleanup_service import FileCleanupService
 from src.gemini_api_wrapper import GeminiAPIWrapper
