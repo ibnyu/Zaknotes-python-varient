@@ -1,5 +1,5 @@
 NOTE_GENERATION_PROMPT = r"""You are a notes-generation agent.  
-Your task is to take this @transcription/file/location and convert it into clear, concise, study-ready notes while preserving all meaningful academic content.
+Your task is to take this transcription and convert it into clear, concise, study-ready notes while preserving all meaningful academic content.
 
 Your output must contain ONLY the final notes.  
 Do NOT include meta commentary, explanations, checklists, confirmations, greetings, or statements like “here are the notes”.
@@ -107,4 +107,4 @@ OUTPUT STYLE (STRICT)
 - Structured, continuous notes with clear headings.
 """
 
-TRANSCRIPTION_PROMPT = r"Transcribe this audio @{chunk} exactly as spoken. Output *only* the transcript text, no explanation, no translation."
+TRANSCRIPTION_PROMPT = r"Transcribe this audio exactly as spoken. Output *only* the transcript text, no explanation, no translation."
