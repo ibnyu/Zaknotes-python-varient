@@ -53,7 +53,7 @@ class GeminiAPIWrapper:
             client, api_key = self._get_client(model_name)
             try:
                 # Upload file
-                file_obj = client.files.upload(path=file_path)
+                file_obj = client.files.upload(file=file_path)
                 self._wait_for_file_active(client, file_obj)
                 
                 response = client.models.generate_content(

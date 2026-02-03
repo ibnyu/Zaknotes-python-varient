@@ -46,7 +46,7 @@ def test_generate_content_with_file_success(mock_client_class, mock_key_manager)
     response = wrapper.generate_content_with_file("path/to/audio.mp3", "prompt", model_type="transcription")
     
     assert response == "Transcription text"
-    mock_client.files.upload.assert_called()
+    mock_client.files.upload.assert_called_with(file="path/to/audio.mp3")
     mock_key_manager.record_usage.assert_called_with("key-1", "gemini-2.5-flash")
 
 @patch('google.genai.Client')
