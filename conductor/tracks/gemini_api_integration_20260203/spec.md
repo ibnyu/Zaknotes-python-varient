@@ -5,7 +5,7 @@ This track involves migrating the Zaknotes project from using the `gemini` CLI t
 
 ## Functional Requirements
 - **Gemini API Migration:**
-    - Replace `GeminiCLIWrapper` with a new `GeminiAPIWrapper` using `google-generativeai`.
+    - Replace `GeminiCLIWrapper` with a new `GeminiAPIWrapper` using `google-genai`.
     - Hardcode models: `gemini-2.5-flash` for transcription and `gemini-3-flash-preview` for note generation.
     - Remove all model selection logic from the CLI and configuration.
 - **API Key Management:**

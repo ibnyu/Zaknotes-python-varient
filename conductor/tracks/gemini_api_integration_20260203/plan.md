@@ -3,7 +3,7 @@
 This plan outlines the migration from the Gemini CLI to the official Google Generative AI API, including API key management, quota tracking, and output refactoring.
 
 ## Phase 1: Environment & Dependency Setup
-- [x] Task: Add `google-generativeai` using `uv add google-generativeai`. a0d72aa
+- [x] Task: Add `google-genai` using `uv add google-genai`. a0d72aa
 - [x] Task: Create `keys/` directory and ensure it is ignored by git. 9a28f6d
 - [~] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
@@ -17,7 +17,7 @@ This plan outlines the migration from the Gemini CLI to the official Google Gene
 
 ## Phase 3: Gemini API Wrapper & Prompt Refactor
 - [ ] Task: Modify `src/prompts.py` to remove file path references from `NOTE_GENERATION_PROMPT`.
-- [ ] Task: Create `src/gemini_api_wrapper.py` using `google-generativeai`.
+- [ ] Task: Create `src/gemini_api_wrapper.py` using `google-genai`.
     - [ ] Sub-task: Implement `generate_content` method that handles API calls and key rotation.
     - [ ] Sub-task: Hardcode model names: `gemini-2.5-flash` and `gemini-3-flash-preview`.
 - [ ] Task: Update `src/transcription_service.py` and `src/note_generation_service.py` to use `GeminiAPIWrapper`.
