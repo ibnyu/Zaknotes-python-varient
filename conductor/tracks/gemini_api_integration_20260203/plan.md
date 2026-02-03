@@ -7,16 +7,16 @@ This plan outlines the migration from the Gemini CLI to the official Google Gene
 - [x] Task: Create `keys/` directory and ensure it is ignored by git. 9a28f6d
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) e0e215a
 
-## Phase 2: API Key & Quota Management
+## Phase 2: API Key & Quota Management [checkpoint: 8e1d2e3]
 - [x] Task: Implement `src/api_key_manager.py` for managing keys and tracking usage. 1511e80
     - [x] Sub-task: Implement `APIKeyManager` class with `add_key`, `remove_key`, `list_keys` methods.
     - [x] Sub-task: Implement `get_available_key(model)` logic with cycling and quota checking.
     - [x] Sub-task: Implement `reset_quotas_if_needed()` using `worldtimeapi.org` or similar for PT midnight.
 - [x] Task: Add API Key Management to the main menu in `zaknotes.py`. bc6c60a
-- [~] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 8e1d2e3
 
 ## Phase 3: Gemini API Wrapper & Prompt Refactor
-- [ ] Task: Modify `src/prompts.py` to remove file path references from `NOTE_GENERATION_PROMPT`.
+- [~] Task: Modify `src/prompts.py` to remove file path references from `NOTE_GENERATION_PROMPT`.
 - [ ] Task: Create `src/gemini_api_wrapper.py` using `google-genai`.
     - [ ] Sub-task: Implement `generate_content` method that handles API calls and key rotation.
     - [ ] Sub-task: Hardcode model names: `gemini-2.5-flash` and `gemini-3-flash-preview`.
