@@ -15,6 +15,9 @@ class ProcessingPipeline:
         """
         Executes the full pipeline for a single job.
         """
+        api = GeminiAPIWrapper()
+        api.key_manager.reset_quotas_if_needed()
+        
         audio_path = None
         chunks = []
         transcript_path = None
@@ -57,8 +60,6 @@ class ProcessingPipeline:
             if os.path.exists(transcript_path):
                 os.remove(transcript_path)
 
-            api = GeminiAPIWrapper()
-            
             any_success = False
             for i, chunk in enumerate(chunks):
                 if i > 0:
