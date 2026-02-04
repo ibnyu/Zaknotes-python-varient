@@ -35,9 +35,9 @@ Update the `find_vimeo_url.py` script to support the new iframe source.
 - [x] Task: Write tests for the updated URL extraction logic using mock HTML content. 230cf8f
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Vidinfra Support' (Protocol in workflow.md)
 
-## Phase 4: Integration and Final Verification
+## Phase 4: Integration and Final Verification [checkpoint: 7e7103a]
 Ensure all components work together within the pipeline.
 
-- [ ] Task: Update `Pipeline` (if necessary) to pass configuration settings to `AudioProcessor`.
-- [ ] Task: Run end-to-end tests with sample audio and mock URLs.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Integration' (Protocol in workflow.md)
+- [x] Task: Update `Pipeline` (if necessary) to pass configuration settings to `AudioProcessor`. f4518b6
+- [x] Task: Run end-to-end tests with sample audio and mock URLs. f4518b6
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Integration' (Protocol in workflow.md)
