@@ -11,8 +11,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## [x] Track: Replace AI Studio automation with Gemini CLI for audio transcription and note generation
 *Link: [./conductor/archive/gemini_cli_integration_20260110/](./conductor/archive/gemini_cli_integration_20260110/)*
-
----
-
-## [x] Track: Duration-Based Chunking, Vidinfra Support & Dynamic Scaling
-*Link: [./tracks/duration_chunking_vidinfra_20260204/](./tracks/duration_chunking_vidinfra_20260204/)*

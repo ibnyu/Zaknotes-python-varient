@@ -1,0 +1,8 @@
+{
+  "track_id": "duration_chunking_vidinfra_20260204",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-04T12:00:00Z",
+  "updated_at": "2026-02-04T12:00:00Z",
+  "description": "Refactor AudioProcessor for duration-based chunking, update Vimeo URL finder for Vidinfra, and implement dynamic resource scaling for FFmpeg."
+}
