@@ -26,14 +26,14 @@ Update `AudioProcessor` to use `ffprobe` for duration and apply scaling to `ffmp
 - [x] Task: Write tests for duration retrieval and duration-based chunking logic. 59eed0c
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Audio Processor Refactor' (Protocol in workflow.md)
 
-## Phase 3: Update URL Finder for Vidinfra
+## Phase 3: Update URL Finder for Vidinfra [checkpoint: 840531e]
 Update the `find_vimeo_url.py` script to support the new iframe source.
 
-- [ ] Task: Update `extract_vimeo_url` in `src/find_vimeo_url.py`.
-    - [ ] Sub-task: Update the BeautifulSoup search to include `player.vidinfra.com`.
-    - [ ] Sub-task: Ensure it still supports `player.vimeo.com`.
-- [ ] Task: Write tests for the updated URL extraction logic using mock HTML content.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Vidinfra Support' (Protocol in workflow.md)
+- [x] Task: Update `extract_vimeo_url` in `src/find_vimeo_url.py`. 230cf8f
+    - [x] Sub-task: Update the BeautifulSoup search to include `player.vidinfra.com`.
+    - [x] Sub-task: Ensure it still supports `player.vimeo.com`.
+- [x] Task: Write tests for the updated URL extraction logic using mock HTML content. 230cf8f
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Vidinfra Support' (Protocol in workflow.md)
 
 ## Phase 4: Integration and Final Verification
 Ensure all components work together within the pipeline.
