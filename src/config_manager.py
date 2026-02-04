@@ -11,6 +11,33 @@ class ConfigManager:
     def __init__(self, config_file: str = "config.json"):
         self.config_file = config_file
         self.config = self.load_config()
+        
+        # Auto-profile if performance_profile is missing
+        if "performance_profile" not in self.config:
+            cores, ram_gb = self.detect_system_resources()
+            profile = self.map_resources_to_profile(cores, ram_gb)
+            self.set("performance_profile", profile)
+            self.save()
+
+    def detect_system_resources(self):
+        """Detects CPU cores and total RAM in GB."""
+        cores = os.cpu_count() or 1
+        try:
+            # For Linux
+            mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
+            ram_gb = mem_bytes / (1024**3)
+        except (AttributeError, ValueError):
+            # Fallback for non-Linux or failures
+            ram_gb = 4.0 # Default assumption
+        return cores, ram_gb
+
+    def map_resources_to_profile(self, cores: int, ram_gb: float) -> str:
+        """Maps detected resources to a performance profile."""
+        if cores >= 8 or ram_gb >= 12:
+            return "high"
+        if cores >= 4 or ram_gb >= 6:
+            return "balanced"
+        return "low"
 
     def load_config(self) -> Dict[str, Any]:
         if not os.path.exists(self.config_file):
