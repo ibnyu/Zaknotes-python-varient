@@ -13,18 +13,18 @@ Implement the logic to detect system resources and update `config.json` with a p
 - [x] Task: Write tests for resource detection and configuration persistence. b7f2b94
 - [x] Task: Conductor - User Manual Verification 'Phase 1: System Profiling' (Protocol in workflow.md)
 
-## Phase 2: Refactor AudioProcessor for Duration and Scaling
+## Phase 2: Refactor AudioProcessor for Duration and Scaling [checkpoint: 738039c]
 Update `AudioProcessor` to use `ffprobe` for duration and apply scaling to `ffmpeg` commands.
 
-- [ ] Task: Implement `AudioProcessor.get_duration(file_path)` using `ffprobe`.
-    - [ ] Sub-task: Add a robust wrapper to extract total duration in seconds.
-- [ ] Task: Modify `AudioProcessor` to accept a `thread_count` or `performance_profile`.
-    - [ ] Sub-task: Update `reencode_to_optimal`, `remove_silence`, and `split_into_chunks` to use the `-threads` flag.
-- [ ] Task: Refactor `process_for_transcription` to use duration-based chunking.
-    - [ ] Sub-task: Remove size-based checks.
-    - [ ] Sub-task: Implement logic: `Always Prepare -> Check Duration -> Chunk if needed`.
-- [ ] Task: Write tests for duration retrieval and duration-based chunking logic.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Audio Processor Refactor' (Protocol in workflow.md)
+- [x] Task: Implement `AudioProcessor.get_duration(file_path)` using `ffprobe`. 59eed0c
+    - [x] Sub-task: Add a robust wrapper to extract total duration in seconds.
+- [x] Task: Modify `AudioProcessor` to accept a `thread_count` or `performance_profile`. 59eed0c
+    - [x] Sub-task: Update `reencode_to_optimal`, `remove_silence`, and `split_into_chunks` to use the `-threads` flag.
+- [x] Task: Refactor `process_for_transcription` to use duration-based chunking. 59eed0c
+    - [x] Sub-task: Remove size-based checks.
+    - [x] Sub-task: Implement logic: `Always Prepare -> Check Duration -> Chunk if needed`.
+- [x] Task: Write tests for duration retrieval and duration-based chunking logic. 59eed0c
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Audio Processor Refactor' (Protocol in workflow.md)
 
 ## Phase 3: Update URL Finder for Vidinfra
 Update the `find_vimeo_url.py` script to support the new iframe source.
