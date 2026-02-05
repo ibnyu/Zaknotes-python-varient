@@ -1,8 +1,8 @@
 # Implementation Plan: Generalized Media Link Extraction and Downloader Enhancement
 
 ## Phase 1: Link Extractor Generalization (TDD)
-- [~] Task: Rename `src/find_vimeo_url.py` to `src/link_extractor.py` and update imports.
-- [ ] Task: Write tests for `link_extractor.py` covering Vimeo, YouTube (`-yt`), and MediaDelivery (`-md`) extraction.
+- [x] Task: Rename `src/find_vimeo_url.py` to `src/link_extractor.py` and update imports. e469cd1
+- [~] Task: Write tests for `link_extractor.py` covering Vimeo, YouTube (`-yt`), and MediaDelivery (`-md`) extraction.
 - [ ] Task: Implement `-yt` flag logic (from `bookmarlet-youtube.js`) in `link_extractor.py`.
 - [ ] Task: Implement `-md` flag logic (from `bookmarlet-apar.js`) in `link_extractor.py`.
 - [ ] Task: Implement interactive selection with timeout in `link_extractor.py`.
