@@ -1,0 +1,8 @@
+{
+  "track_id": "ua_mgmt_dl_reliability_20260206",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-06T12:00:00Z",
+  "updated_at": "2026-02-06T12:00:00Z",
+  "description": "Add user-agent configuration, improve cleanup, and fix download reliability issues (403 and HLS)."
+}

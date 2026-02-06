@@ -12,3 +12,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 ## [x] Track: Replace AI Studio automation with Gemini CLI for audio transcription and note generation
 *Link: [./conductor/archive/gemini_cli_integration_20260110/](./conductor/archive/gemini_cli_integration_20260110/)*
 
+---
+
+- [~] **Track: Add user-agent configuration, improve cleanup, and fix download reliability issues (403 and HLS).**
+*Link: [./tracks/ua_mgmt_dl_reliability_20260206/](./tracks/ua_mgmt_dl_reliability_20260206/)*
+
