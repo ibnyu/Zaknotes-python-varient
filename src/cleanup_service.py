@@ -31,13 +31,28 @@ class FileCleanupService:
                 except Exception as e:
                     print(f"Manual Cleanup: Failed to delete {path}: {e}")
 
-        # Cleanup downloads (only mp3/part files)
+        # Cleanup downloads (only mp3/part files and the temp folder)
         if os.path.exists(downloads_dir):
             for f in os.listdir(downloads_dir):
                 if f == ".gitkeep": continue
-                # We only want to delete audio files and partial downloads
+                
+                path = os.path.join(downloads_dir, f)
+                
+                # Special handling for downloads/temp
+                if f == "temp" and os.path.isdir(path):
+                    for sub_f in os.listdir(path):
+                        if sub_f == ".gitkeep": continue
+                        sub_path = os.path.join(path, sub_f)
+                        try:
+                            if os.path.isfile(sub_path): os.remove(sub_path)
+                            elif os.path.isdir(sub_path): shutil.rmtree(sub_path)
+                            print(f"Manual Cleanup: Deleted {sub_path}")
+                        except Exception as e:
+                            print(f"Manual Cleanup: Failed to delete {sub_path}: {e}")
+                    continue
+
+                # We only want to delete audio files and partial downloads in the root downloads dir
                 if f.lower().endswith((".mp3", ".part", ".ytdl", ".m4a", ".webm")):
-                    path = os.path.join(downloads_dir, f)
                     try:
                         os.remove(path)
                         print(f"Manual Cleanup: Deleted {path}")
