@@ -14,5 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Generalize link extraction and update downloader.py**
+- [x] **Track: Generalize link extraction and update downloader.py**
 *Link: [./tracks/generalized_media_link_extraction_20260205/](./tracks/generalized_media_link_extraction_20260205/)*
