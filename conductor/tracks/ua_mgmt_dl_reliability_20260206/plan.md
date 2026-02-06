@@ -9,7 +9,7 @@
     - [x] Add the option to the `main_menu()`.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Configuration and UI' (Protocol in workflow.md)
 
-## Phase 2: User-Agent Integration
+## Phase 2: User-Agent Integration [checkpoint: c220570]
 - [x] Task: Modify `src/downloader.py` to fetch User-Agent from `ConfigManager` and apply it to all `yt-dlp` templates. b5960f2
     - [x] Update `download_audio` to use the configured User-Agent instead of a hardcoded one.
 - [x] Task: Update `src/link_extractor.py` to accept a `--user-agent` argument and use it in Playwright. b5960f2
@@ -17,7 +17,7 @@
     - [x] Pass the value to `browser.new_context()`.
 - [x] Task: Update `src/downloader.py` to pass the configured User-Agent to `src/link_extractor.py`. b5960f2
     - [x] Update the `scraper_cmd` construction in the EdgeCourseBD mode.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: User-Agent Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: User-Agent Integration' (Protocol in workflow.md)
 
 ## Phase 3: Cleanup Service Improvement
 - [ ] Task: Update `FileCleanupService.cleanup_all_temp_files` to recursively clean `downloads/temp`.
