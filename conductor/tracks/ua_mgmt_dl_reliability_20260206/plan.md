@@ -4,7 +4,7 @@
 - [x] Task: Update `ConfigManager` to support `user_agent` with a default value. f1337fb
     - [ ] Add `user_agent` to `DEFAULT_CONFIG` in `src/config_manager.py`.
     - [ ] Ensure it persists correctly in `config.json`.
-- [ ] Task: Implement `configure_user_agent` in `zaknotes.py` and add it to the main menu.
+- [x] Task: Implement `configure_user_agent` in `zaknotes.py` and add it to the main menu. cde215d
     - [ ] Create a new function `configure_user_agent()` similar to `configure_audio_chunking()`.
     - [ ] Add the option to the `main_menu()`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Configuration and UI' (Protocol in workflow.md)
