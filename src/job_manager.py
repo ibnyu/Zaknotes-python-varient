@@ -28,6 +28,7 @@ class JobManager:
     def get_pending_from_last_150(self):
         """
         Return list of jobs with status 'queue', 'failed', 'downloading', or 'processing' (for retry).
+        Exclude 'no_link_found' from retry.
         """
         target_statuses = ['queue', 'failed', 'downloading', 'processing']
         pending = [job for job in self.history if job.get('status') in target_statuses]

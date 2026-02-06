@@ -17,6 +17,18 @@ def job_manager():
     if os.path.exists(HISTORY_FILE):
         os.remove(HISTORY_FILE)
 
+def test_get_pending_excludes_no_link_found(job_manager):
+    """Test that no_link_found jobs are excluded from pending list."""
+    job_manager.history = [
+        {"id": "1", "status": "queue"},
+        {"id": "2", "status": "no_link_found"},
+        {"id": "3", "status": "failed"}
+    ]
+    
+    pending = job_manager.get_pending_from_last_150()
+    assert len(pending) == 2
+    assert all(j["status"] != "no_link_found" for j in pending)
+
 def test_fail_pending(job_manager):
     """Test marking all pending jobs as failed."""
     job_manager.history = [
