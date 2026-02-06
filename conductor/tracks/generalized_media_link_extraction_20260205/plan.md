@@ -18,6 +18,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Downloader Refactor and Enhancement' (Protocol in workflow.md) d10a2c4
 
 ## Phase 3: Cleanup and Finalization
-- [ ] Task: Delete `bookmarlet-apar.js` and `bookmarlet-youtube.js`.
+- [~] Task: Delete `bookmarlet-apar.js` and `bookmarlet-youtube.js`.
 - [ ] Task: Perform final verification of the entire pipeline.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Cleanup and Finalization' (Protocol in workflow.md)
