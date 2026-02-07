@@ -17,10 +17,10 @@ def api_setup():
     wrapper = GeminiAPIWrapper(key_manager=manager)
     return manager, wrapper
 
-def test_debug_logging_content(api_setup, caplog):
-    """Test that debug logs contain expected info and truncated content."""
+def test_logging_content(api_setup, caplog):
+    """Test that info logs contain expected info and truncated content."""
     manager, wrapper = api_setup
-    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.INFO)
     
     with patch("google.genai.Client") as mock_client_class:
         mock_client = MagicMock()
@@ -37,10 +37,10 @@ def test_debug_logging_content(api_setup, caplog):
         assert "Gemini API Response - Success" in log_text
         assert "Response (truncated): This is a very long response" in log_text
 
-def test_debug_logging_error(api_setup, caplog):
-    """Test that debug logs contain error info."""
+def test_logging_error(api_setup, caplog):
+    """Test that error logs contain error info."""
     manager, wrapper = api_setup
-    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.ERROR)
     
     with patch("google.genai.Client") as mock_client_class:
         mock_client = MagicMock()
