@@ -21,9 +21,9 @@ Goal: Modify the main pipeline to utilize new states for resuming interrupted jo
 - [x] Task: Implement transcription resumption logic (skip already transcribed chunks). d45d4b6
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Pipeline Resumption Logic' (Protocol in workflow.md) 38ee98d
 
-## Phase 4: Interactive Cleanup
+## Phase 4: Interactive Cleanup [checkpoint: a00e971]
 Goal: Provide users with granular control over workspace cleanup.
 
 - [x] Task: Update `CleanupService` to support filtered purging (All vs. Completed/Cancelled Only). 3bf8bc2
 - [x] Task: Update CLI in `zaknotes.py` to present interactive cleanup options. 3bf8bc2
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Interactive Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Interactive Cleanup' (Protocol in workflow.md) a00e971
