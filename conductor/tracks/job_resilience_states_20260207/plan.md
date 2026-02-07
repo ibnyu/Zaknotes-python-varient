@@ -17,8 +17,8 @@ Goal: Implement persistent intermediate states in the job management system.
 ## Phase 3: Pipeline Resumption Logic
 Goal: Modify the main pipeline to utilize new states for resuming interrupted jobs.
 
-- [ ] Task: Refactor `Pipeline` to check for existing state/files and skip completed steps.
-- [ ] Task: Implement transcription resumption logic (skip already transcribed chunks).
+- [x] Task: Refactor `Pipeline` to check for existing state/files and skip completed steps. d45d4b6
+- [x] Task: Implement transcription resumption logic (skip already transcribed chunks). d45d4b6
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Pipeline Resumption Logic' (Protocol in workflow.md)
 
 ## Phase 4: Interactive Cleanup
