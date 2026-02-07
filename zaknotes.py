@@ -111,7 +111,7 @@ def cleanup_stranded_chunks():
 
 def run_processing_pipeline(manager):
     config = ConfigManager()
-    pipeline = ProcessingPipeline(config)
+    pipeline = ProcessingPipeline(config, job_manager=manager)
     
     pending_jobs = manager.get_pending_from_last_150()
     if not pending_jobs:

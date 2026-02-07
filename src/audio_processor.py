@@ -122,7 +122,7 @@ class AudioProcessor:
             return []
 
     @staticmethod
-    def process_for_transcription(input_path: str, segment_time: int = 1800, output_dir: str = "temp", threads: int = 0) -> List[str]:
+    def process_for_transcription(input_path: str, segment_time: int = 1800, output_dir: str = "temp", threads: int = 0, output_pattern: str = None) -> List[str]:
         """
         Orchestrates the audio processing using duration-based chunking.
         """
@@ -157,7 +157,8 @@ class AudioProcessor:
             return [prepared_path]
 
         print(f"   - Processed file duration ({duration:.2f}s) exceeds limit ({segment_time}s). Splitting...")
-        output_pattern = os.path.join(output_dir, f"{base_name}_chunk_%03d{extension}")
+        if not output_pattern:
+            output_pattern = os.path.join(output_dir, f"{base_name}_chunk_%03d{extension}")
         
         chunks = AudioProcessor.split_into_chunks(prepared_path, output_pattern, segment_time, threads=threads)
         print(f"   - Split into {len(chunks)} chunks.")

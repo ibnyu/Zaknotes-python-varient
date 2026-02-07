@@ -9,9 +9,9 @@ from src.prompts import TRANSCRIPTION_PROMPT
 from src.job_manager import JobManager
 
 class ProcessingPipeline:
-    def __init__(self, config_manager, api_wrapper=None):
+    def __init__(self, config_manager, api_wrapper=None, job_manager=None):
         self.config = config_manager
-        self.manager = JobManager()
+        self.manager = job_manager or JobManager()
         self.api = api_wrapper or GeminiAPIWrapper()
 
     def execute_job(self, job) -> bool:
@@ -40,6 +40,7 @@ class ProcessingPipeline:
             elif os.path.exists(audio_path):
                 # Even if status is not set, if file exists we might want to skip or at least be aware
                 print(f"⏩ Audio file {audio_path} already exists. Skipping download and setting status to DOWNLOADED.")
+                job['status'] = 'DOWNLOADED' # Update in-memory object
                 self.manager.update_job_status(job['id'], 'DOWNLOADED')
                 skip_download = True
             
@@ -52,13 +53,13 @@ class ProcessingPipeline:
                     self.manager.update_job_status(job['id'], 'failed')
                     return False
                 self.manager.update_job_status(job['id'], 'DOWNLOADED')
+                job['status'] = 'DOWNLOADED'
 
             # 2. Audio Processing (Skip if status >= CHUNKED)
             skip_processing = False
             if job.get('status') in ['CHUNKED'] or job.get('status', '').startswith('TRANSCRIBING_CHUNK_'):
-                # Try to find existing chunks
-                base_name = os.path.splitext(os.path.basename(audio_path))[0]
-                chunks = sorted([os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.startswith(f"{base_name}_chunk_")])
+                # Try to find existing chunks using job ID
+                chunks = sorted([os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.startswith(f"job_{job['id']}_chunk_")])
                 if chunks:
                     print(f"⏩ Skipping audio processing: {len(chunks)} chunk(s) found in {temp_dir}.")
                     skip_processing = True
@@ -72,15 +73,21 @@ class ProcessingPipeline:
                 threads = 0
                 if profile == "low": threads = 1
                 elif profile == "high": threads = 0
+                
+                # We'll use a specific pattern including job ID
+                extension = os.path.splitext(audio_path)[1] or ".mp3"
+                output_pattern = os.path.join(temp_dir, f"job_{job['id']}_chunk_%03d{extension}")
                     
                 chunks = AudioProcessor.process_for_transcription(
                     audio_path, 
                     segment_time=segment_time,
                     output_dir=temp_dir,
-                    threads=threads
+                    threads=threads,
+                    output_pattern=output_pattern # Pass custom pattern
                 )
                 print(f"   - Audio split into {len(chunks)} chunk(s).")
                 self.manager.update_job_status(job['id'], 'CHUNKED')
+                job['status'] = 'CHUNKED'
             
             # 3. Transcription
             print(f"📝 [3/4] Transcribing {len(chunks)} chunks using Gemini...")
