@@ -64,6 +64,9 @@ class JobManager:
         for job in self.history:
             status = job.get('status', '')
             if status in target_statuses or status.startswith('TRANSCRIBING_CHUNK_'):
+                # Preserve the current state in a separate field if it's granular
+                if status not in ['queue', 'downloading', 'processing']:
+                    job['last_granular_state'] = status
                 job['status'] = 'failed'
         self.save_history()
 
@@ -71,6 +74,9 @@ class JobManager:
         """Update the status of a specific job by ID."""
         for job in self.history:
             if job.get('id') == job_id:
+                old_status = job.get('status')
+                if status == 'failed' and old_status not in ['queue', 'downloading', 'processing', 'failed', 'completed', 'cancelled']:
+                    job['last_granular_state'] = old_status
                 job['status'] = status
                 self.save_history()
                 return True
@@ -86,6 +92,13 @@ class JobManager:
                 self.save_history()
                 return True
         return False
+
+    def get_job(self, job_id):
+        """Get a specific job by ID."""
+        for job in self.history:
+            if job.get('id') == job_id:
+                return job
+        return None
 
     def smart_split(self, text):
         """Splits by comma/pipe/newline but respects (groups)"""

@@ -49,3 +49,24 @@ def test_per_chunk_tracking(job_manager):
     job = job_manager.history[0]
     assert job["transcriptions"]["1"] == "Transcript for chunk 1"
     assert job["status"] == "TRANSCRIBING_CHUNK_1"
+
+def test_failure_state_preservation(job_manager):
+    """Test that granular state is preserved when a job fails."""
+    job_id = "test_fail"
+    job_manager.history = [{"id": job_id, "status": "CHUNKED"}]
+    
+    # Mark as failed
+    job_manager.update_job_status(job_id, "failed")
+    
+    job = job_manager.get_job(job_id)
+    assert job["status"] == "failed"
+    assert job["last_granular_state"] == "CHUNKED"
+
+    # Test fail_pending preservation
+    job_id_2 = "test_fail_2"
+    job_manager.history.append({"id": job_id_2, "status": "TRANSCRIBING_CHUNK_2"})
+    job_manager.fail_pending()
+    
+    job2 = job_manager.get_job(job_id_2)
+    assert job2["status"] == "failed"
+    assert job2["last_granular_state"] == "TRANSCRIBING_CHUNK_2"
