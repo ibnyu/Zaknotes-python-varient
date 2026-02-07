@@ -28,27 +28,64 @@ class JobManager:
     def get_pending_from_last_150(self):
         """
         Return list of jobs with status 'queue', 'failed', 'downloading', or 'processing' (for retry).
+        Also includes granular intermediate states.
         Exclude 'no_link_found' from retry.
         """
-        target_statuses = ['queue', 'failed', 'downloading', 'processing']
-        pending = [job for job in self.history if job.get('status') in target_statuses]
+        target_statuses = [
+            'queue', 'failed', 'downloading', 'processing',
+            'DOWNLOADED', 'SILENCE_REMOVED', 'BITRATE_MODIFIED', 'CHUNKED'
+        ]
+        # Use regex for TRANSCRIBING_CHUNK_N
+        pending = []
+        for job in self.history:
+            status = job.get('status', '')
+            if status in target_statuses or status.startswith('TRANSCRIBING_CHUNK_'):
+                pending.append(job)
         return pending
 
     def cancel_pending(self):
         """Cancel ALL pending, failed, and stuck jobs in history"""
-        target_statuses = ['queue', 'failed', 'downloading', 'processing']
+        target_statuses = [
+            'queue', 'failed', 'downloading', 'processing',
+            'DOWNLOADED', 'SILENCE_REMOVED', 'BITRATE_MODIFIED', 'CHUNKED'
+        ]
         for job in self.history:
-            if job.get('status') in target_statuses:
+            status = job.get('status', '')
+            if status in target_statuses or status.startswith('TRANSCRIBING_CHUNK_'):
                 job['status'] = 'cancelled'
         self.save_history()
 
     def fail_pending(self):
         """Mark ALL pending, downloading, or processing jobs as failed"""
-        target_statuses = ['queue', 'downloading', 'processing']
+        target_statuses = [
+            'queue', 'downloading', 'processing',
+            'DOWNLOADED', 'SILENCE_REMOVED', 'BITRATE_MODIFIED', 'CHUNKED'
+        ]
         for job in self.history:
-            if job.get('status') in target_statuses:
+            status = job.get('status', '')
+            if status in target_statuses or status.startswith('TRANSCRIBING_CHUNK_'):
                 job['status'] = 'failed'
         self.save_history()
+
+    def update_job_status(self, job_id, status):
+        """Update the status of a specific job by ID."""
+        for job in self.history:
+            if job.get('id') == job_id:
+                job['status'] = status
+                self.save_history()
+                return True
+        return False
+
+    def add_chunk_transcription(self, job_id, chunk_index, transcription):
+        """Store transcription for a specific chunk index persistently."""
+        for job in self.history:
+            if job.get('id') == job_id:
+                if 'transcriptions' not in job:
+                    job['transcriptions'] = {}
+                job['transcriptions'][str(chunk_index)] = transcription
+                self.save_history()
+                return True
+        return False
 
     def smart_split(self, text):
         """Splits by comma/pipe/newline but respects (groups)"""
