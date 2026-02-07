@@ -24,6 +24,6 @@ Goal: Modify the main pipeline to utilize new states for resuming interrupted jo
 ## Phase 4: Interactive Cleanup
 Goal: Provide users with granular control over workspace cleanup.
 
-- [ ] Task: Update `CleanupService` to support filtered purging (All vs. Completed/Cancelled Only).
-- [ ] Task: Update CLI in `zaknotes.py` to present interactive cleanup options.
+- [x] Task: Update `CleanupService` to support filtered purging (All vs. Completed/Cancelled Only). 3bf8bc2
+- [x] Task: Update CLI in `zaknotes.py` to present interactive cleanup options. 3bf8bc2
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Interactive Cleanup' (Protocol in workflow.md)
