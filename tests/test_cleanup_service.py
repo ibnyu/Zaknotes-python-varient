@@ -39,5 +39,5 @@ def test_cleanup_all_temp_files(tmp_path):
     assert os.path.exists(temp_dir / ".gitkeep")
     
     assert not os.path.exists(down_dir / "movie.mp3")
-    assert os.path.exists(down_dir / "doc.pdf") # Because it's not .mp3/.part etc
+    assert not os.path.exists(down_dir / "doc.pdf") # Full cleanup deletes everything
     assert os.path.exists(down_dir / ".gitkeep")

@@ -33,70 +33,142 @@ def output_md(tmp_path):
 
 @patch('src.gemini_api_wrapper.GeminiAPIWrapper.generate_content')
 
+
+
 def test_generate_success(mock_gen, transcript_file, output_md):
+
+
 
     """Test successful note generation."""
 
+
+
     mock_gen.return_value = "# Notes\nContent"
 
+
+
     
+
+
 
     success = NoteGenerationService.generate(
 
+
+
         transcript_path=transcript_file,
+
+
 
         output_path=output_md
 
+
+
     )
 
+
+
     
+
+
 
     assert success is True
 
-    
 
-    # Verify prompt construction (contains transcript)
-
-    full_prompt = mock_gen.call_args[0][0]
-
-    assert "This is the transcript." in full_prompt
 
     
+
+
+
+    # Verify call structure
+
+
+
+    kwargs = mock_gen.call_args[1]
+
+
+
+    assert "This is the transcript." in kwargs['prompt']
+
+
+
+    assert "You are a notes-generation agent." in kwargs['system_instruction']
+
+
+
+    
+
+
 
     with open(output_md, 'r') as f:
+
+
 
         assert f.read() == "# Notes\nContent"
 
 
 
+
+
+
+
 @patch('src.gemini_api_wrapper.GeminiAPIWrapper.generate_content')
+
+
 
 def test_generate_custom_prompt(mock_gen, transcript_file, output_md):
 
+
+
     """Test note generation with custom prompt text."""
+
+
 
     mock_gen.return_value = "Custom output"
 
+
+
     
+
+
 
     custom_prompt = "Custom base prompt"
 
+
+
     success = NoteGenerationService.generate(
+
+
 
         transcript_path=transcript_file,
 
+
+
         output_path=output_md,
+
+
 
         prompt_text=custom_prompt
 
+
+
     )
+
+
 
     
 
+
+
     assert success is True
 
-    full_prompt = mock_gen.call_args[0][0]
 
-    assert "Custom base prompt" in full_prompt
 
-    assert "This is the transcript." in full_prompt
+    kwargs = mock_gen.call_args[1]
+
+
+
+    assert kwargs['system_instruction'] == "Custom base prompt"
+
+
+
+    assert "This is the transcript." in kwargs['prompt']
