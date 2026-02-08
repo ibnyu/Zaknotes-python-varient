@@ -1,0 +1,8 @@
+{
+  "track_id": "system_instruction_transcription_20260208",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-08T12:00:00Z",
+  "updated_at": "2026-02-08T12:00:00Z",
+  "description": "Refactor Gemini API calls to use system_instruction and refine transcription prompt for clean verbatim and language preservation."
+}

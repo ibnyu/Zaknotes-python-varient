@@ -15,4 +15,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 ## [x] Track: Refactor Gemini API calls to use system_instruction and refine transcription prompt
-*Link: [./tracks/system_instruction_transcription_20260208/](./tracks/system_instruction_transcription_20260208/)*
+*Link: [./conductor/archive/system_instruction_transcription_20260208/](./conductor/archive/system_instruction_transcription_20260208/)*
