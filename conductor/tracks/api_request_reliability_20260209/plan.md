@@ -8,12 +8,12 @@
 - [x] Task: Verify `config.json` is updated with default values if they are missing. (commit: 5957711)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Configuration Updates' (Protocol in workflow.md) (commit: 55154a8)
 
-## Phase 2: Key Rotation Logic
-- [ ] Task: Modify `APIKeyManager` to support round-robin key selection.
+## Phase 2: Key Rotation Logic [checkpoint: 40ff836]
+- [x] Task: Modify `APIKeyManager` to support round-robin key selection. (commit: a6cf61f)
     - Add a `last_key_index` tracker (can be persistent or in-memory for the session).
     - Update `get_available_key(model)` to start searching from the key after the last one used.
-- [ ] Task: Update `tests/test_api_key_manager.py` to verify that consecutive calls to `get_available_key` return different keys when multiple are available.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Key Rotation Logic' (Protocol in workflow.md)
+- [x] Task: Update `tests/test_api_key_manager.py` to verify that consecutive calls to `get_available_key` return different keys when multiple are available. (commit: 2f9de57)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Key Rotation Logic' (Protocol in workflow.md) (commit: 40ff836)
 
 ## Phase 3: Timeout and Retry Implementation
 - [ ] Task: Update `GeminiAPIWrapper.__init__` to load timeout and retry config from `ConfigManager`.
