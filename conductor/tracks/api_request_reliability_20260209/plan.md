@@ -1,0 +1,30 @@
+# Implementation Plan: API Request Timeout, Retry, and Key Rotation
+
+## Phase 1: Configuration Updates [checkpoint: 55154a8]
+- [x] Task: Update `ConfigManager.DEFAULT_CONFIG` with new API settings. (commit: d062514)
+    - Add `api_timeout`: 300
+    - Add `api_max_retries`: 3
+    - Add `api_retry_delay`: 10
+- [x] Task: Verify `config.json` is updated with default values if they are missing. (commit: 5957711)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Configuration Updates' (Protocol in workflow.md) (commit: 55154a8)
+
+## Phase 2: Key Rotation Logic
+- [ ] Task: Modify `APIKeyManager` to support round-robin key selection.
+    - Add a `last_key_index` tracker (can be persistent or in-memory for the session).
+    - Update `get_available_key(model)` to start searching from the key after the last one used.
+- [ ] Task: Update `tests/test_api_key_manager.py` to verify that consecutive calls to `get_available_key` return different keys when multiple are available.
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Key Rotation Logic' (Protocol in workflow.md)
+
+## Phase 3: Timeout and Retry Implementation
+- [ ] Task: Update `GeminiAPIWrapper.__init__` to load timeout and retry config from `ConfigManager`.
+- [ ] Task: Modify `GeminiAPIWrapper._get_client` to apply `api_timeout` to the `genai.Client`.
+- [ ] Task: Implement retry loop in `GeminiAPIWrapper.generate_content` for timeout exceptions.
+    - Log retry attempts and delays.
+    - Call `key_manager.mark_exhausted` if max retries reached.
+- [ ] Task: Implement retry loop in `GeminiAPIWrapper.generate_content_with_file`.
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Timeout and Retry Implementation' (Protocol in workflow.md)
+
+## Phase 4: Verification
+- [ ] Task: Create `tests/test_api_reliability_mechanisms.py` to test both rotation and timeout/retry behavior together.
+- [ ] Task: Verify key exhaustion behavior triggers a switch to a new (rotated) key.
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Verification' (Protocol in workflow.md)
