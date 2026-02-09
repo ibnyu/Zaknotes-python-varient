@@ -22,7 +22,7 @@
 - [x] Task: Implement retry loop in `GeminiAPIWrapper.generate_content_with_file`. (commit: e12e5c3)
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Timeout and Retry Implementation' (Protocol in workflow.md) (commit: c159d1d)
 
-## Phase 4: Verification
-- [ ] Task: Create `tests/test_api_reliability_mechanisms.py` to test both rotation and timeout/retry behavior together.
-- [ ] Task: Verify key exhaustion behavior triggers a switch to a new (rotated) key.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Verification' (Protocol in workflow.md)
+## Phase 4: Verification [checkpoint: 1389c5c]
+- [x] Task: Create `tests/test_api_reliability_mechanisms.py` to test both rotation and timeout/retry behavior together. (commit: 080ab3f)
+- [x] Task: Verify key exhaustion behavior triggers a switch to a new (rotated) key. (commit: 080ab3f)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Verification' (Protocol in workflow.md) (commit: 1389c5c)
