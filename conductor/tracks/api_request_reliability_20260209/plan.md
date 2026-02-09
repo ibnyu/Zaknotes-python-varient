@@ -15,14 +15,12 @@
 - [x] Task: Update `tests/test_api_key_manager.py` to verify that consecutive calls to `get_available_key` return different keys when multiple are available. (commit: 2f9de57)
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Key Rotation Logic' (Protocol in workflow.md) (commit: 40ff836)
 
-## Phase 3: Timeout and Retry Implementation
-- [ ] Task: Update `GeminiAPIWrapper.__init__` to load timeout and retry config from `ConfigManager`.
-- [ ] Task: Modify `GeminiAPIWrapper._get_client` to apply `api_timeout` to the `genai.Client`.
-- [ ] Task: Implement retry loop in `GeminiAPIWrapper.generate_content` for timeout exceptions.
-    - Log retry attempts and delays.
-    - Call `key_manager.mark_exhausted` if max retries reached.
-- [ ] Task: Implement retry loop in `GeminiAPIWrapper.generate_content_with_file`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Timeout and Retry Implementation' (Protocol in workflow.md)
+## Phase 3: Timeout and Retry Implementation [checkpoint: c159d1d]
+- [x] Task: Update `GeminiAPIWrapper.__init__` to load timeout and retry config from `ConfigManager`. (commit: e12e5c3)
+- [x] Task: Modify `GeminiAPIWrapper._get_client` to apply `api_timeout` to the `genai.Client`. (commit: e12e5c3)
+- [x] Task: Implement retry loop in `GeminiAPIWrapper.generate_content` for timeout exceptions. (commit: e12e5c3)
+- [x] Task: Implement retry loop in `GeminiAPIWrapper.generate_content_with_file`. (commit: e12e5c3)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Timeout and Retry Implementation' (Protocol in workflow.md) (commit: c159d1d)
 
 ## Phase 4: Verification
 - [ ] Task: Create `tests/test_api_reliability_mechanisms.py` to test both rotation and timeout/retry behavior together.
