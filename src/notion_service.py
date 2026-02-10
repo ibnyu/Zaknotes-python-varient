@@ -50,18 +50,19 @@ class NotionService:
 
     def process_inline_formatting(self, text: str) -> List[Dict[str, Any]]:
         """
-        Processes inline markdown formatting (bold, italic, code, links) into Notion rich text objects.
+        Processes inline markdown formatting (bold, italic, code, links, math) into Notion rich text objects.
         """
         # Patterns for inline formatting
         bold_pattern = r'(\*\*|__)(.*?)\1'
         italic_pattern = r'(\*|_)(.*?)\1'
         code_pattern = r'`(.*?)`'
         link_pattern = r'\[(.*?)\]\((.*?)\)'
+        math_pattern = r'\$(.*?)\$'
 
         # We'll use a list of parts that can be either strings (unprocessed) or dicts (processed)
         parts = [text]
 
-        def replace_with_regex(parts_list, pattern, annotation_key=None, is_link=False):
+        def replace_with_regex(parts_list, pattern, annotation_key=None, is_link=False, is_math=False):
             new_parts = []
             for part in parts_list:
                 if not isinstance(part, str):
@@ -82,6 +83,12 @@ class NotionService:
                             "text": {"content": content, "link": {"url": url}},
                             "annotations": {}
                         }
+                    elif is_math:
+                        expression = match.group(1)
+                        rt = {
+                            "type": "equation",
+                            "equation": {"expression": expression}
+                        }
                     else:
                         content = match.group(2) if annotation_key != 'code' else match.group(1)
                         rt = {
@@ -97,6 +104,7 @@ class NotionService:
             return new_parts
 
         # Apply replacements in order of priority
+        parts = replace_with_regex(parts, math_pattern, is_math=True)
         parts = replace_with_regex(parts, code_pattern, 'code')
         parts = replace_with_regex(parts, link_pattern, is_link=True)
         parts = replace_with_regex(parts, bold_pattern, 'bold')
@@ -113,9 +121,46 @@ class NotionService:
         
         return rich_text
 
+    def _convert_table_to_latex(self, table_lines: List[str]) -> str:
+        """
+        Converts a list of markdown table lines to a LaTeX array for Notion equations.
+        """
+        if len(table_lines) < 2:
+            return ""
+
+        # Extract headers and rows, skipping delimiter line
+        headers = [c.strip() for c in table_lines[0].split('|') if c.strip()]
+        rows = []
+        for line in table_lines[2:]:
+            cols = [c.strip() for c in line.split('|') if c.strip()]
+            if cols:
+                rows.append(cols)
+
+        if not headers:
+            return ""
+
+        col_count = len(headers)
+        col_format = "|c" * col_count + "|"
+        
+        latex = f"\\def\\arraystretch{{1.4}}\\begin{{array}}{{{col_format}}}\\hline\n"
+        
+        # Add Header
+        header_row = " & ".join([f"\\textsf{{\\textbf{{{h}}}}}" for h in headers])
+        latex += f"{header_row} \\\\\\hline\n"
+        
+        # Add Data Rows
+        for row in rows:
+            # Pad or truncate row to match col_count
+            row = (row + [""] * col_count)[:col_count]
+            row_text = " & ".join([f"\\textsf{{{c}}}" for c in row])
+            latex += f"{row_text} \\\\\\hline\n"
+            
+        latex += "\\end{array}"
+        return latex
+
     def markdown_to_blocks(self, markdown_text: str) -> List[Dict[str, Any]]:
         """
-        Converts Markdown text into Notion blocks. Handles headings, lists, code blocks, and quotes.
+        Converts Markdown text into Notion blocks. Handles math, tables, headings, lists, code blocks, and quotes.
         """
         # Pre-process triple-backtick code blocks
         code_blocks = {}
@@ -128,15 +173,47 @@ class NotionService:
 
         markdown_text = re.sub(r'```(\w*)\n?(.*?)```', replace_code_block, markdown_text, flags=re.DOTALL)
 
+        # Pre-process block math
+        math_blocks = {}
+        def replace_math_block(match):
+            idx = len(math_blocks)
+            expression = match.group(1).strip()
+            math_blocks[f"MATH_BLOCK_{idx}"] = expression
+            return f"\nMATH_BLOCK_{idx}\n"
+
+        markdown_text = re.sub(r'\$\$(.*?)\$\$', replace_math_block, markdown_text, flags=re.DOTALL)
+
         lines = markdown_text.split("\n")
         blocks = []
         
+        in_table = False
+        table_lines = []
+
         for line in lines:
             stripped = line.strip()
+            
+            # Table detection
+            is_table_row = bool(re.match(r'^\|.*\|$', stripped))
+            if is_table_row:
+                in_table = True
+                table_lines.append(stripped)
+                continue
+            elif in_table:
+                # Process the table
+                latex_table = self._convert_table_to_latex(table_lines)
+                if latex_table:
+                    blocks.append({
+                        "object": "block",
+                        "type": "equation",
+                        "equation": {"expression": latex_table}
+                    })
+                in_table = False
+                table_lines = []
+
             if not stripped:
                 continue
 
-            # Code Blocks (Placeholder replacement)
+            # Code Blocks
             if stripped in code_blocks:
                 lang, content = code_blocks[stripped]
                 blocks.append({
@@ -146,6 +223,16 @@ class NotionService:
                         "language": lang,
                         "rich_text": [{"type": "text", "text": {"content": content}}]
                     }
+                })
+                continue
+
+            # Math Blocks
+            if stripped in math_blocks:
+                expression = math_blocks[stripped]
+                blocks.append({
+                    "object": "block",
+                    "type": "equation",
+                    "equation": {"expression": expression}
                 })
                 continue
 
@@ -202,6 +289,16 @@ class NotionService:
                 "type": "paragraph",
                 "paragraph": {"rich_text": self.process_inline_formatting(stripped)}
             })
+
+        # Catch trailing table
+        if in_table:
+            latex_table = self._convert_table_to_latex(table_lines)
+            if latex_table:
+                blocks.append({
+                    "object": "block",
+                    "type": "equation",
+                    "equation": {"expression": latex_table}
+                })
 
         return blocks
 

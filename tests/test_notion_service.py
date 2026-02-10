@@ -78,6 +78,36 @@ def test_inline_formatting_bold_italic():
         elif content == "code":
             assert annotations.get("code") is True
 
+def test_markdown_to_blocks_latex_and_table():
+    service = NotionService(notion_secret="test_secret", database_id="test_db")
+    md = """Inline $E=mc^2$
+$$
+x^2 + y^2 = z^2
+$$
+
+| H1 | H2 |
+|---|---|
+| R1C1 | R1C2 |
+"""
+    blocks = service.markdown_to_blocks(md)
+    
+    # Blocks:
+    # 0. Paragraph with inline math
+    # 1. Equation block
+    # 2. Equation block (table)
+    
+    assert len(blocks) == 3
+    assert blocks[0]["type"] == "paragraph"
+    assert blocks[0]["paragraph"]["rich_text"][1]["type"] == "equation"
+    assert blocks[0]["paragraph"]["rich_text"][1]["equation"]["expression"] == "E=mc^2"
+    
+    assert blocks[1]["type"] == "equation"
+    assert blocks[1]["equation"]["expression"] == "x^2 + y^2 = z^2"
+    
+    assert blocks[2]["type"] == "equation"
+    assert "\\begin{array}" in blocks[2]["equation"]["expression"]
+    assert "R1C1" in blocks[2]["equation"]["expression"]
+
 def test_notion_service_create_page_batching(mock_notion_client):
     mock_instance = mock_notion_client.return_value
     mock_instance.pages.create.return_value = {"id": "new_page_id", "url": "http://notion.so/new_page"}
