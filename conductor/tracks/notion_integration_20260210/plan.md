@@ -11,7 +11,7 @@ This plan outlines the integration of Notion as an automated storage backend for
 ## Phase 2: Notion Integration Service
 - [x] Task: Create `src/notion_service.py` skeleton with basic Notion API connectivity tests 6d4d9bb
 - [x] Task: Implement Markdown to Notion block parsing (adapted from `md2notion/` with modern API checks) e5a9cff
-- [ ] Task: Implement Notion page creation and block batching (100 blocks/2000 chars limits)
+- [x] Task: Implement Notion page creation and block batching (100 blocks/2000 chars limits) e71082e
 - [ ] Task: Implement error handling for API failures and rate limits
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Notion Integration Service' (Protocol in workflow.md)
 
