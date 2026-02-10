@@ -124,15 +124,25 @@ class NotionService:
     def _convert_table_to_latex(self, table_lines: List[str]) -> str:
         """
         Converts a list of markdown table lines to a LaTeX array for Notion equations.
+        Also handles basic markdown (bold/italic) within cells.
         """
         if len(table_lines) < 2:
             return ""
 
+        def clean_cell(text: str) -> str:
+            # Handle bold: **text** or __text__ -> \textbf{text}
+            text = re.sub(r'(\*\*|__)(.*?)\1', r'\\textbf{\2}', text)
+            # Handle italic: *text* or _text_ -> \textit{text}
+            text = re.sub(r'(\*|_)(.*?)\1', r'\\textit{\2}', text)
+            # Escape LaTeX special characters that might break the array
+            text = text.replace("&", "\\&").replace("%", "\\%").replace("$", "\\$")
+            return text
+
         # Extract headers and rows, skipping delimiter line
-        headers = [c.strip() for c in table_lines[0].split('|') if c.strip()]
+        headers = [clean_cell(c.strip()) for c in table_lines[0].split('|') if c.strip()]
         rows = []
         for line in table_lines[2:]:
-            cols = [c.strip() for c in line.split('|') if c.strip()]
+            cols = [clean_cell(c.strip()) for c in line.split('|') if c.strip()]
             if cols:
                 rows.append(cols)
 
