@@ -197,6 +197,57 @@ def run_processing_pipeline(manager):
     
     print("\n🏁 Pipeline execution finished.")
 
+def process_old_notes():
+    config = ConfigManager()
+    if not config.get("notion_integration_enabled", False):
+        print("❌ Notion integration is disabled. Please enable it in 'Manage Notion Settings' first.")
+        return
+
+    notion_manager = NotionConfigManager()
+    notion_secret, database_id = notion_manager.get_credentials()
+    if not notion_secret or not database_id:
+        print("❌ Notion credentials not configured. Please set them in 'Manage Notion Settings' first.")
+        return
+
+    notes_dir = "notes"
+    if not os.path.exists(notes_dir):
+        print(f"❌ Notes directory '{notes_dir}' does not exist.")
+        return
+
+    md_files = [f for f in os.listdir(notes_dir) if f.endswith(".md")]
+    if not md_files:
+        print("No old notes found in 'notes/' directory.")
+        return
+
+    print(f"🚀 Found {len(md_files)} notes. Starting push to Notion...")
+    
+    try:
+        notion_service = NotionService(notion_secret, database_id)
+        success_count = 0
+        
+        for filename in md_files:
+            file_path = os.path.join(notes_dir, filename)
+            title = os.path.splitext(filename)[0].replace("_", " ")
+            
+            print(f"--- Pushing: {title} ---")
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                url = notion_service.create_page(title, content)
+                if url:
+                    print(f"✅ Pushed: {url}")
+                    os.remove(file_path)
+                    success_count += 1
+                else:
+                    print(f"❌ Failed to push '{filename}': No URL returned.")
+            except Exception as e:
+                print(f"❌ Error pushing '{filename}': {e}")
+        
+        print(f"\n🏁 Finished! Successfully pushed {success_count}/{len(md_files)} notes.")
+    except Exception as e:
+        print(f"❌ Failed to initialize Notion service: {e}")
+
 def start_note_generation():
     manager = JobManager()
     
@@ -205,11 +256,12 @@ def start_note_generation():
         print("1. Start New Jobs (Cancel Old Jobs)")
         print("2. Start New Jobs (Add to Queue)")
         print("3. Cancel All Old Jobs")
-        print("4. Process Old Jobs")
-        print("5. Back to Main Menu")
+        print("4. Process Queued Jobs")
+        print("5. Process Old Notes (Push to Notion)")
+        print("6. Back to Main Menu")
         print("--------------------------------")
         
-        sub_choice = input("Enter your choice (1-5): ").strip()
+        sub_choice = input("Enter your choice (1-6): ").strip()
         
         if sub_choice == '1':
             manager.cancel_pending()
@@ -239,6 +291,10 @@ def start_note_generation():
             break
             
         elif sub_choice == '5':
+            process_old_notes()
+            break
+            
+        elif sub_choice == '6':
             break
         else:
             print("❌ Invalid choice.")
