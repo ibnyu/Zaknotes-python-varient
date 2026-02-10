@@ -14,30 +14,69 @@ logger = logging.getLogger(__name__)
 
 from src.cookie_manager import interactive_update as refresh_cookies
 from src.api_key_manager import APIKeyManager
+from src.notion_config_manager import NotionConfigManager
 from src.config_manager import ConfigManager
 from src.pipeline import ProcessingPipeline
 from src.cleanup_service import FileCleanupService
+
+def manage_notion_settings():
+    config = ConfigManager()
+    notion_manager = NotionConfigManager()
+    
+    while True:
+        enabled = config.get("notion_integration_enabled", False)
+        secret, db_id = notion_manager.get_credentials()
+        
+        print("\n--- Manage Notion Integration ---")
+        print(f"1. Integration Enabled: {'✅ Yes' if enabled else '❌ No'}")
+        print(f"2. Set Notion Secret (Current: {secret[:4]}...{secret[-4:] if len(secret) > 8 else '****'})")
+        print(f"3. Set Database ID (Current: {db_id})")
+        print("4. Back to Keys Menu")
+        
+        choice = input("Enter your choice (1-4): ").strip()
+        
+        if choice == '1':
+            config.set("notion_integration_enabled", not enabled)
+            config.save()
+            print(f"✅ Integration {'enabled' if not enabled else 'disabled'}.")
+        elif choice == '2':
+            val = input("Enter Notion API Secret: ").strip()
+            if val:
+                _, curr_db = notion_manager.get_credentials()
+                notion_manager.set_credentials(val, curr_db)
+                print("✅ Notion Secret updated.")
+        elif choice == '3':
+            val = input("Enter Notion Database ID: ").strip()
+            if val:
+                curr_secret, _ = notion_manager.get_credentials()
+                notion_manager.set_credentials(curr_secret, val)
+                print("✅ Database ID updated.")
+        elif choice == '4':
+            break
+        else:
+            print("❌ Invalid choice.")
 
 def manage_api_keys():
     manager = APIKeyManager()
     while True:
         keys = manager.list_keys()
-        print("\n--- Manage Gemini API Keys ---")
+        print("\n--- Manage API Keys & Integration ---")
         if not keys:
-            print("No API keys configured.")
+            print("No Gemini API keys configured.")
         else:
-            print("Configured Keys:")
+            print("Configured Gemini Keys:")
             for i, k in enumerate(keys, 1):
                 # Mask key for display
                 masked = k['key'][:4] + "..." + k['key'][-4:] if len(k['key']) > 8 else "****"
                 print(f"{i}. {masked}")
         
-        print("\n1. Add API Key")
-        print("2. Remove API Key")
+        print("\n1. Add Gemini API Key")
+        print("2. Remove Gemini API Key")
         print("3. View Quota Status")
-        print("4. Back to Main Menu")
+        print("4. Manage Notion Settings")
+        print("5. Back to Main Menu")
         
-        choice = input("Enter your choice (1-4): ").strip()
+        choice = input("Enter your choice (1-5): ").strip()
         
         if choice == '1':
             key = input("Enter new Gemini API Key: ").strip()
@@ -69,6 +108,8 @@ def manage_api_keys():
                 for line in report:
                     print(line)
         elif choice == '4':
+            manage_notion_settings()
+        elif choice == '5':
             break
         else:
             print("❌ Invalid choice.")
