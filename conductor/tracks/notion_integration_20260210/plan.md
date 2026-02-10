@@ -21,7 +21,7 @@ This plan outlines the integration of Notion as an automated storage backend for
 - [x] Task: Implement "Process Old Notes" logic and add it to the `Start Note Generation` menu in `zaknotes.py` b0e366a
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Pipeline & Feature Integration' (Protocol in workflow.md)
 
-## Phase 4: Finalization & Cleanup
+## Phase 4: Finalization & Cleanup [checkpoint: c3906ad]
 - [x] Task: Update `README.md` with Notion integration setup and usage instructions 8712c90
-- [~] Task: Delete the `md2notion/` directory and all its contents
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Finalization & Cleanup' (Protocol in workflow.md)
+- [x] Task: Delete the `md2notion/` directory and all its contents ac29b75
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Finalization & Cleanup' (Protocol in workflow.md)
