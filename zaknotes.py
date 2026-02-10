@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 from src.cookie_manager import interactive_update as refresh_cookies
 from src.api_key_manager import APIKeyManager
 from src.notion_config_manager import NotionConfigManager
+from src.notion_service import NotionService
 from src.config_manager import ConfigManager
 from src.pipeline import ProcessingPipeline
 from src.cleanup_service import FileCleanupService
