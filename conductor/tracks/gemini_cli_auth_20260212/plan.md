@@ -12,13 +12,13 @@ This plan outlines the steps to replace the standard Gemini API key authenticati
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation & Legacy Removal' (Protocol in workflow.md)
 
 ## Phase 2: Models & Usage Tracking
-- [ ] Task: Implement `models.json`
-    - [ ] Create `models.json` with a list of available models for transcription and note generation.
-    - [ ] Update `src/config_manager.py` to allow selecting different models for different pipeline stages.
-- [ ] Task: Implement Request Usage Tracker
-    - [ ] Create a simple JSON-based logger to track model usage count per account email.
-    - [ ] Write unit tests for the usage tracker.
-    - [ ] Implement the usage tracker.
+- [x] Task: Implement `models.json`
+    - [x] Create `models.json` with a list of available models for transcription and note generation.
+    - [x] Update `src/config_manager.py` to allow selecting different models for different pipeline stages.
+- [x] Task: Implement Request Usage Tracker
+    - [x] Create a simple JSON-based logger to track model usage count per account email.
+    - [x] Write unit tests for the usage tracker.
+    - [x] Implement the usage tracker.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Models & Usage Tracking' (Protocol in workflow.md)
 
 ## Phase 3: Auth Service & Credential Helper

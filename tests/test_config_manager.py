@@ -22,7 +22,7 @@ def config_manager():
 def test_load_defaults(config_manager):
     """Test that defaults are loaded when config file does not exist."""
     assert config_manager.get("transcription_model") == "gemini-2.5-flash"
-    assert config_manager.get("note_generation_model") == "gemini-3-pro-preview"
+    assert config_manager.get("note_generation_model") == "gemini-3-flash-preview"
 
 def test_save_and_load(config_manager):
     """Test saving and reloading configuration."""

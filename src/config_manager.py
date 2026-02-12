@@ -5,12 +5,13 @@ from typing import Any, Dict, Optional
 class ConfigManager:
     DEFAULT_CONFIG = {
         "transcription_model": "gemini-2.5-flash",
-        "note_generation_model": "gemini-3-pro-preview",
+        "note_generation_model": "gemini-3-flash-preview",
         "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "api_timeout": 300,
         "api_max_retries": 3,
         "api_retry_delay": 10,
-        "notion_integration_enabled": False
+        "notion_integration_enabled": False,
+        "max_chunk_size_mb": 15
     }
 
     def __init__(self, config_file: str = "config.json"):
