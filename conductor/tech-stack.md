@@ -7,8 +7,8 @@
 - **Playwright (Python):** Used for connecting to an existing Chromium instance (port 9222), automating Google AI Studio, and generating PDF files from HTML.
 
 ## AI Platform
-- **Gemini API:** Utilizing official Google Generative AI API for transcription and note generation.
-- **google-genai:** Official Python SDK for the Gemini API (successor to `google-generativeai`).
+- **Gemini Internal API:** Utilizing internal `v1internal:streamGenerateContent` endpoints via `httpx` for high-limit transcription and note generation.
+- **OAuth2 with PKCE:** Custom implementation for capturing and refreshing Gemini CLI authorizations.
 
 ## External Integrations
 - **Notion API:** Used for automated note storage and organization.
@@ -23,9 +23,10 @@
 - **Linux:** Target operating system for the CLI tool.
 
 ## Key Dependencies
-- `google-genai`: Python library for Gemini API interaction.
+- `google-genai`: (Deprecated) Replaced by direct `httpx` calls to internal Gemini endpoints.
 - `notion-client`: For Notion API interaction and note storage.
 - `yt-dlp`: For video metadata and audio extraction.
 - `ffmpeg/ffprobe`: For audio processing, duration retrieval, and silent part removal.
 - `pytest`: For automated testing.
 - `urllib.parse`: Python standard library for domain and URL parsing.
+- `httpx`: For robust, asynchronous API requests to Gemini internal endpoints.
