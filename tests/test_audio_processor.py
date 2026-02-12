@@ -17,11 +17,11 @@ def dummy_file(tmp_path):
 
 @pytest.fixture
 def real_audio_file(tmp_path):
-    """Creates a 5-second silent MP3 file."""
+    """Creates a 100-second silent MP3 file."""
     p = tmp_path / "silent.mp3"
     subprocess.run([
         "ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo", 
-        "-t", "5", "-b:a", "128k", str(p)
+        "-t", "100", "-b:a", "128k", str(p)
     ], check=True, capture_output=True)
     return str(p)
 
@@ -67,107 +67,47 @@ def test_remove_silence(real_audio_file, tmp_path):
     # Since it's pure silence, it should be significantly smaller or empty-ish
     assert os.path.getsize(output_file) < os.path.getsize(real_audio_file)
 
-def test_split_into_chunks(real_audio_file, tmp_path):
-    """Test splitting audio into chunks."""
+def test_split_by_size(real_audio_file, tmp_path):
+    """Test splitting audio by size."""
     output_pattern = str(tmp_path / "chunk_%03d.mp3")
     
-    # Split 5s file into 2s chunks -> should produce 3 chunks (2s, 2s, 1s)
-    chunks = AudioProcessor.split_into_chunks(real_audio_file, output_pattern, segment_time=2)
+    # 5s file at 128k is ~80KB. Let's force split by setting max_size to 0.05MB (~50KB)
+    chunks = AudioProcessor.split_by_size(real_audio_file, output_pattern, max_size_mb=0.05)
     
     assert len(chunks) >= 2
     for chunk in chunks:
         assert os.path.exists(chunk)
 
 def test_get_duration(real_audio_file):
-
     """Test retrieving duration of an audio file."""
-
     duration = AudioProcessor.get_duration(real_audio_file)
-
-    # real_audio_file was created with -t 5
-
-    assert 4.5 < duration < 5.5
-
-
+    # real_audio_file was created with -t 100
+    assert 99.5 < duration < 100.5
 
 def test_thread_support(real_audio_file, tmp_path):
-
     """Test that threads parameter is handled in ffmpeg commands."""
-
     output_file = str(tmp_path / "threaded.mp3")
-
     # Just verify it doesn't crash when threads=4 is passed
-
     success = AudioProcessor.reencode_to_optimal(real_audio_file, output_file, bitrate="32k", threads=4)
-
     assert success is True
 
-
-
-def test_duration_based_chunking(real_audio_file, tmp_path):
-
-
-
-    """Test that chunking is decided based on duration, not size."""
-
-
-
-    # 5s file, segment_time=2s -> 3 chunks
-
-
-
+def test_size_based_chunking(real_audio_file, tmp_path):
+    """Test that chunking is decided based on size."""
+    # 5s file @ 128k is ~80KB. 
+    # max_size_mb=0.01 (10KB) -> Should definitely split even after re-encoding
     chunks = AudioProcessor.process_for_transcription(
-
-
-
         real_audio_file,
-
-
-
-        segment_time=2,
-
-
-
+        max_size_mb=0.01,
         output_dir=str(tmp_path)
-
-
-
     )
+    assert len(chunks) >= 2
 
-
-
-    assert len(chunks) >= 3
-
-
-
-
-
-
-
-    # 5s file, segment_time=10s -> 1 chunk
-
-
-
+    # max_size_mb=1 (1MB) -> Should NOT split
     chunks = AudioProcessor.process_for_transcription(
-
-
-
         real_audio_file,
-
-
-
-        segment_time=10,
-
-
-
+        max_size_mb=1,
         output_dir=str(tmp_path)
-
-
-
     )
-
-
-
     assert len(chunks) == 1
 
 
