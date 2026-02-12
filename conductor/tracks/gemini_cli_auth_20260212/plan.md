@@ -22,18 +22,18 @@ This plan outlines the steps to replace the standard Gemini API key authenticati
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Models & Usage Tracking' (Protocol in workflow.md)
 
 ## Phase 3: Auth Service & Credential Helper
-- [ ] Task: Create Gemini Credential Helper
-    - [ ] Implement `src/gemini_creds_helper.py` to extract `clientId` and `clientSecret` from `gemini-cli` (following `gemini.ts`).
-    - [ ] Add logic to handle cases where the CLI is missing by prompting for manual input.
-- [ ] Task: Implement Gemini Auth Service
-    - [ ] Write unit tests for PKCE flow, token exchange, and refresh logic (mocking Google OAuth endpoints).
-    - [ ] Implement `src/gemini_auth_service.py` with:
-        - [ ] PKCE challenge/verifier generation.
-        - [ ] Token exchange and refresh (90-min interval).
-        - [ ] Manual entry mode for remote auth.
-        - [ ] Project discovery (`loadCodeAssist`/`onboardUser`).
-- [ ] Task: Adapt Rotation Logic
-    - [ ] Modify the existing cycling logic to rotate between multiple `GeminiCliAuthRecord` objects.
+- [x] Task: Create Gemini Credential Helper
+    - [x] Implement `src/gemini_creds_helper.py` to extract `clientId` and `clientSecret` from `gemini-cli` (following `gemini.ts`).
+    - [x] Add logic to handle cases where the CLI is missing by prompting for manual input.
+- [x] Task: Implement Gemini Auth Service
+    - [x] Write unit tests for PKCE flow, token exchange, and refresh logic (mocking Google OAuth endpoints).
+    - [x] Implement `src/gemini_auth_service.py` with:
+        - [x] PKCE challenge/verifier generation.
+        - [x] Token exchange and refresh (90-min interval).
+        - [x] Manual entry mode for remote auth.
+        - [x] Project discovery (`loadCodeAssist`/`onboardUser`).
+- [x] Task: Adapt Rotation Logic
+    - [x] Modify the existing cycling logic to rotate between multiple `GeminiCliAuthRecord` objects.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Auth Service & Credential Helper' (Protocol in workflow.md)
 
 ## Phase 4: Audio Processing & Chunking
