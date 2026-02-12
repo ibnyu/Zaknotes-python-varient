@@ -64,8 +64,9 @@ def test_download_facebook(mock_cookies, mock_run, mock_job):
     
     # Verify yt-dlp was called
     args = mock_run.call_args[0][0]
-    assert "facebook.com" in args
-    assert "--cookies \"cookies/bangi.txt\"" in args
+    assert any("facebook.com" in a for a in args)
+    assert any("cookies" in a for a in args)
+    assert any("bangi.txt" in a for a in args)
 
 @patch('src.downloader.run_command')
 @patch('src.downloader.get_cookie_path')
@@ -76,9 +77,8 @@ def test_download_youtube(mock_cookies, mock_run, mock_job):
     download_audio(mock_job)
     
     args = mock_run.call_args[0][0]
-    # YouTube should use the fallback logic according to spec
-    assert "youtube.com" in args
-    assert "Referer: https://www.youtube.com/" in args
+    assert any("youtube.com" in a for a in args)
+    assert any("Referer: https://www.youtube.com/" in a for a in args)
 
 @patch('src.downloader.run_command')
 @patch('src.downloader.get_cookie_path')
@@ -90,9 +90,9 @@ def test_download_mediadelivery(mock_cookies, mock_run, mock_job):
     download_audio(mock_job)
     
     args = mock_run.call_args[0][0]
-    assert "mediadelivery.net" in args
-    assert "Referer: https://academic.aparsclassroom.com/" in args
-    assert "Origin: https://academic.aparsclassroom.com" in args
+    assert any("mediadelivery.net" in a for a in args)
+    assert any("Referer: https://academic.aparsclassroom.com/" in a for a in args)
+    assert any("Origin: https://academic.aparsclassroom.com" in a for a in args)
 
 @patch('src.downloader.run_command')
 @patch('src.downloader.get_cookie_path')
@@ -108,10 +108,10 @@ def test_download_edgecoursebd(mock_cookies, mock_run, mock_job):
     
     assert mock_run.call_count == 2
     scraper_call = mock_run.call_args_list[0][0][0]
-    assert "link_extractor.py" in scraper_call
+    assert any("link_extractor.py" in a for a in scraper_call)
     
     yt_dlp_call = mock_run.call_args_list[1][0][0]
-    assert "player.vimeo.com" in yt_dlp_call
+    assert any("player.vimeo.com" in a for a in yt_dlp_call)
 
 @patch('src.downloader.run_command')
 @patch('src.downloader.get_cookie_path')
@@ -127,4 +127,4 @@ def test_download_fallback_failure(mock_cookies, mock_run, mock_job):
     
     # Verify it tried the generic command
     args = mock_run.call_args[0][0]
-    assert "unknown-domain.com" in args
+    assert any("unknown-domain.com" in a for a in args)

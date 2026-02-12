@@ -82,17 +82,6 @@ class JobManager:
                 return True
         return False
 
-    def add_chunk_transcription(self, job_id, chunk_index, transcription):
-        """Store transcription for a specific chunk index persistently."""
-        for job in self.history:
-            if job.get('id') == job_id:
-                if 'transcriptions' not in job:
-                    job['transcriptions'] = {}
-                job['transcriptions'][str(chunk_index)] = transcription
-                self.save_history()
-                return True
-        return False
-
     def get_job(self, job_id):
         """Get a specific job by ID."""
         for job in self.history:

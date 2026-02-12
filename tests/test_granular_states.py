@@ -32,24 +32,6 @@ def test_granular_states_retrieval(job_manager):
     assert len(pending) == 5
     assert all(j["status"] != "done" for j in pending)
 
-def test_per_chunk_tracking(job_manager):
-    """Test setting and retrieving per-chunk transcription progress."""
-    job_id = "test_job"
-    job_manager.history = [{"id": job_id, "status": "CHUNKED"}]
-    
-    # Update to chunk 1 transcribed
-    job_manager.update_job_status(job_id, "TRANSCRIBING_CHUNK_1")
-    assert job_manager.history[0]["status"] == "TRANSCRIBING_CHUNK_1"
-    
-    # Should also store the transcribed chunks persistently
-    job_manager.add_chunk_transcription(job_id, 1, "Transcript for chunk 1")
-    
-    # Reload and check
-    job_manager.load_history()
-    job = job_manager.history[0]
-    assert job["transcriptions"]["1"] == "Transcript for chunk 1"
-    assert job["status"] == "TRANSCRIBING_CHUNK_1"
-
 def test_failure_state_preservation(job_manager):
     """Test that granular state is preserved when a job fails."""
     job_id = "test_fail"

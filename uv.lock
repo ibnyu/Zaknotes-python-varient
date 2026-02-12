@@ -927,6 +927,6 @@ requires-dist = [
     { name = "urllib3", specifier = "==2.6.2" },
     { name = "websocket-client", specifier = "==1.9.0" },
     { name = "websockets", specifier = "==15.0.1" },
-    { name = "yt-dlp", specifier = ">=2025.12.8" },
-    { name = "yt-dlp-ejs", specifier = ">=0.3.2" },
+    { name = "yt-dlp" },
+    { name = "yt-dlp-ejs" },
 ]

@@ -24,10 +24,11 @@ class FileCleanupService:
             # Targeted cleanup: Purge EVERYTHING for these specific jobs
             print(f"🧹 Purging all intermediate files for {len(jobs_to_purge)} jobs...")
             for job in jobs_to_purge:
+                safe_name = job['name'].replace(" ", "_").replace("/", "-")
                 # 1. Temp directory (chunks and transcripts)
                 if os.path.exists(temp_dir):
                     for f in os.listdir(temp_dir):
-                        if f.startswith(f"job_{job['id']}_") or f.startswith(f"{job['id']}_"):
+                        if f.startswith(f"job_{job['id']}_") or f.startswith(f"{job['id']}_") or f.startswith(safe_name):
                             path = os.path.join(temp_dir, f)
                             try:
                                 if os.path.isfile(path): os.remove(path)

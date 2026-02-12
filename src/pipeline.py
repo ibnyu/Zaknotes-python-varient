@@ -95,25 +95,27 @@ class ProcessingPipeline:
             if job.get('status') == 'BITRATE_MODIFIED':
                 chunks = sorted([os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.startswith(f"job_{job['id']}_chunk_")])
                 if not chunks:
-                    print(f"✂️ Splitting audio into chunks...")
-                    segment_time = self.config.get("segment_time", 1800)
+                    print(f"✂️ Splitting audio into chunks based on size...")
+                    max_size_mb = self.config.get("max_chunk_size_mb", 15)
                     output_pattern = os.path.join(temp_dir, f"job_{job['id']}_chunk_%03d{extension}")
                     
-                    duration = AudioProcessor.get_duration(prepared_path)
-                    if duration <= segment_time:
-                        print(f"   - Duration {duration:.2f}s is within limit. No splitting needed.")
-                        single_chunk = os.path.join(temp_dir, f"job_{job['id']}_chunk_001{extension}")
-                        shutil.copy2(prepared_path, single_chunk)
-                        chunks = [single_chunk]
-                    else:
-                        chunks = AudioProcessor.split_into_chunks(prepared_path, output_pattern, segment_time)
+                    chunks = AudioProcessor.process_for_transcription(prepared_path, max_size_mb=max_size_mb, output_dir=temp_dir, output_pattern=output_pattern)
                     
+                    if not chunks:
+                        print(f"❌ Error: Size-based chunking failed to produce chunks for job {job['id']}")
+                        self.manager.update_job_status(job['id'], 'failed')
+                        return False
+
                     self.manager.update_job_status(job['id'], 'CHUNKED')
                     job['status'] = 'CHUNKED'
                 else:
                     print(f"⏩ Skipping chunking: {len(chunks)} chunk(s) already exist.")
                     self.manager.update_job_status(job['id'], 'CHUNKED')
                     job['status'] = 'CHUNKED'
+            
+            # Re-verify chunks existence for next step (Transcription)
+            if not chunks and (job.get('status') == 'CHUNKED' or job.get('status', '').startswith('TRANSCRIBING_CHUNK_')):
+                chunks = sorted([os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.startswith(f"job_{job['id']}_chunk_")])
             
             if not chunks and (job.get('status') == 'CHUNKED' or job.get('status', '').startswith('TRANSCRIBING_CHUNK_')):
                 chunks = sorted([os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.startswith(f"job_{job['id']}_chunk_")])
@@ -124,38 +126,28 @@ class ProcessingPipeline:
 
             # 3. Transcription
             print(f"📝 [3/4] Transcribing {len(chunks)} chunks using Gemini...")
-            transcript_path = os.path.join(temp_dir, f"{job['id']}_transcript.txt")
+            safe_name = job['name'].replace(" ", "_").replace("/", "-")
+            transcript_path = os.path.join(temp_dir, f"{safe_name}_transcript.txt")
             
-            # Implementation of 10s wait before chunks
-            out_dir = os.path.dirname(transcript_path)
-            if out_dir and not os.path.exists(out_dir):
-                os.makedirs(out_dir, exist_ok=True)
+            # Ensure the directory for transcript exists
+            if not os.path.exists(temp_dir):
+                os.makedirs(temp_dir, exist_ok=True)
 
-            if os.path.exists(transcript_path) and job.get('status') == 'CHUNKED':
-                 # If we are just starting transcription but file exists, clear it
-                 os.remove(transcript_path)
-
-            any_success = False
-            # Get existing transcriptions if any
-            existing_transcriptions = job.get('transcriptions', {})
+            # Count existing chunks in the transcript file for resumption
+            # Each chunk is separated by \n\n
+            completed_chunks = 0
+            if os.path.exists(transcript_path):
+                with open(transcript_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    # Split by double newline and filter empty parts
+                    completed_chunks = len([p for p in content.split("\n\n") if p.strip()])
             
-            # Reconstruct transcript file from existing ones if resuming
-            if existing_transcriptions:
-                with open(transcript_path, 'w', encoding='utf-8') as f:
-                    # Sort by chunk index
-                    for idx in sorted(existing_transcriptions.keys(), key=int):
-                        f.write(existing_transcriptions[idx])
-                        f.write("\n\n")
-                any_success = True
-            elif not os.path.exists(transcript_path):
-                # Ensure file exists for 'a' mode later if we have no existing trans
-                with open(transcript_path, 'w', encoding='utf-8') as f:
-                    pass
+            any_success = completed_chunks > 0
 
             for i, chunk in enumerate(chunks):
                 chunk_index = i + 1
-                if str(chunk_index) in existing_transcriptions:
-                    print(f"      - Chunk {chunk_index}/{len(chunks)} already transcribed. Skipping.")
+                if chunk_index <= completed_chunks:
+                    print(f"      - Chunk {chunk_index}/{len(chunks)} already transcribed in {transcript_path}. Skipping.")
                     continue
 
                 if any_success: # If we processed at least one chunk (resumed or new)
@@ -175,7 +167,6 @@ class ProcessingPipeline:
                         with open(transcript_path, 'a', encoding='utf-8') as f:
                             f.write(text)
                             f.write("\n\n")
-                        self.manager.add_chunk_transcription(job['id'], chunk_index, text)
                         any_success = True
                     else:
                         print(f"      ⚠️ Warning: No text extracted from chunk {chunk_index}")
@@ -236,9 +227,9 @@ class ProcessingPipeline:
 
             # 6. Cleanup
             print(f"🧹 Cleaning up intermediate files...")
-            files_to_cleanup = [audio_path, transcript_path]
+            files_to_cleanup = [audio_path, transcript_path, prepared_path]
             for c in chunks:
-                if c != audio_path:
+                if c not in files_to_cleanup:
                     files_to_cleanup.append(c)
             
             # If successfully pushed to Notion, also cleanup the final md file

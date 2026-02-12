@@ -44,8 +44,7 @@ def test_execute_job_success(mock_job_manager_class, mock_shutil, mock_os, mock_
     # AudioProcessor mocks
     mock_audio_class.remove_silence.return_value = True
     mock_audio_class.reencode_to_optimal.return_value = True
-    mock_audio_class.get_duration.return_value = 100 # Short duration, no splitting
-    mock_audio_class.split_into_chunks.return_value = ["temp/job_123_chunk_001.mp3"]
+    mock_audio_class.process_for_transcription.return_value = ["temp/job_123_chunk_001.mp3"]
     
     # OS mocks
     mock_os.path.exists.return_value = False # Default to false

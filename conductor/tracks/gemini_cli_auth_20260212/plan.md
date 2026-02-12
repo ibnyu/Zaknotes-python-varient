@@ -51,10 +51,10 @@ This plan outlines the steps to replace the standard Gemini API key authenticati
 - [x] Task: Conductor - User Manual Verification 'Phase 5: Internal API Integration' (Protocol in workflow.md)
 
 ## Phase 6: Pipeline Integration & Final Testing
-- [ ] Task: Integrate Auth and API into Pipeline
-    - [ ] Update `src/pipeline.py` to use the new `GeminiAuthService` and updated `GeminiApiWrapper`.
-- [ ] Task: Update Menu and CLI Interface
-    - [ ] Add options to the main menu for adding/managing Gemini CLI accounts.
-- [ ] Task: End-to-End Verification
-    - [ ] Run the full pipeline with multiple accounts to verify cycling, refresh, and successful note generation.
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Pipeline Integration & Final Testing' (Protocol in workflow.md)
+- [x] Task: Integrate Auth and API into Pipeline
+    - [x] Update `src/pipeline.py` to use the new `GeminiAuthService` and updated `GeminiApiWrapper`.
+- [x] Task: Update Menu and CLI Interface
+    - [x] Add options to the main menu for adding/managing Gemini CLI accounts.
+- [x] Task: End-to-End Verification
+    - [x] Run the full pipeline with multiple accounts to verify cycling, refresh, and successful note generation.
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Pipeline Integration & Final Testing' (Protocol in workflow.md)

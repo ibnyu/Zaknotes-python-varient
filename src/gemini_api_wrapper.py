@@ -3,6 +3,7 @@ import httpx
 import logging
 import json
 import os
+import asyncio
 from typing import Optional, List, Dict, Any
 from src.gemini_auth_service import GeminiAuthService, GeminiCliAuthRecord
 from src.usage_tracker import UsageTracker
@@ -35,10 +36,22 @@ class GeminiAPIWrapper:
         self.error_file = "error.json"
 
     def _log_error(self, request_body: Any, response_data: Any):
-        """Logs the full request and response to error.json."""
+        """Logs the full request and response to error.json with truncation for large data."""
+        
+        def truncate_recursive(data):
+            if isinstance(data, dict):
+                return {k: truncate_recursive(v) for k, v in data.items()}
+            elif isinstance(data, list):
+                return [truncate_recursive(i) for i in data]
+            elif isinstance(data, str) and len(data) > 200:
+                return data[:100] + "... [TRUNCATED] ..." + data[-50:]
+            return data
+
+        truncated_request = truncate_recursive(request_body)
+        
         error_entry = {
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "request": request_body,
+            "request": truncated_request,
             "response": response_data
         }
         
@@ -59,10 +72,16 @@ class GeminiAPIWrapper:
         with open(self.error_file, 'w') as f:
             json.dump(errors, f, indent=4)
 
-    async def generate_content_async(self, prompt: str, audio_base64: Optional[str] = None, model_type: str = "note") -> str:
-        model_name = self.config.get(f"{model_type}_model") or "gemini-2.0-flash"
+    async def generate_content_async(self, prompt: str, audio_base64: Optional[str] = None, model_type: str = "note", system_instruction: Optional[str] = None) -> str:
+        # Map 'note' to 'note_generation' to match config key
+        config_prefix = "note_generation" if model_type == "note" else model_type
+        model_name = self.config.get(f"{config_prefix}_model") or "gemini-2.0-flash"
         
-        while True:
+        max_accounts_to_try = len(self.auth_service.accounts) or 1
+        accounts_tried = 0
+        
+        while accounts_tried < max_accounts_to_try:
+            accounts_tried += 1
             auth_record = self.auth_service.get_next_account()
             if not auth_record:
                 raise Exception("No Gemini CLI accounts configured. Please add an account first.")
@@ -96,6 +115,12 @@ class GeminiAPIWrapper:
                 "requestId": request_id,
             }
 
+            # Add systemInstruction inside 'request' with camelCase
+            if system_instruction:
+                request_body["request"]["systemInstruction"] = {
+                    "parts": [{"text": system_instruction}]
+                }
+
             for attempt in range(self.api_max_retries + 1):
                 logger.info(f"Gemini API Request - Account: {auth_record['email']}, Type: {model_type}, Model: {model_name} (Attempt: {attempt + 1})")
                 
@@ -122,8 +147,13 @@ class GeminiAPIWrapper:
                             self._log_error(request_body, error_payload)
                             logger.error(f"Gemini API Error ({resp.status_code}) for {auth_record['email']}")
                             
-                            if resp.status_code in [401, 403, 429]:
-                                # 429 is exhaustion, 401/403 might be expired or permission issues
+                            if resp.status_code == 429:
+                                logger.warning(f"Rate limit (429) for {auth_record['email']}. Waiting 30s and retrying indefinitely...")
+                                await asyncio.sleep(30)
+                                accounts_tried = 0 # Reset safety to allow indefinite retries
+                                break # Move to next account (or same if only one)
+                            
+                            if resp.status_code in [401, 403]:
                                 break # Move to next account
                             
                             if resp.status_code == 503:
@@ -136,6 +166,10 @@ class GeminiAPIWrapper:
                         # Process SSE stream
                         full_text = ""
                         for line in resp.iter_lines():
+                            # Ensure line is a string for startswith and slicing
+                            if isinstance(line, bytes):
+                                line = line.decode('utf-8')
+                                
                             if line.startswith("data:"):
                                 json_str = line[5:].strip()
                                 if not json_str: continue
@@ -163,26 +197,23 @@ class GeminiAPIWrapper:
                         break # Try next account
                     time.sleep(self.api_retry_delay)
                 except Exception as e:
-                    logger.error(f"Gemini API Exception: {e}")
-                    self._log_error(request_body, str(e))
+                    logger.error(f"Gemini API Exception ({type(e).__name__}): {e}")
+                    self._log_error(request_body, f"{type(e).__name__}: {str(e)}")
                     if attempt >= self.api_max_retries:
                         break # Try next account
                     time.sleep(self.api_retry_delay)
 
+        raise Exception("All configured Gemini CLI accounts failed or were skipped.")
+
     # Synchronous wrappers for existing pipeline
     def generate_content(self, prompt, model_type="note", system_instruction=None):
         import asyncio
-        # Combine system instruction and prompt for v1internal as it doesn't explicitly 
-        # separate them in the same way in the streamGenerateContent body (usually)
-        # based on gemini.ts. Actually, we can put them in parts.
-        full_prompt = f"{system_instruction}\n\n{prompt}" if system_instruction else prompt
-        return asyncio.run(self.generate_content_async(full_prompt, model_type=model_type))
+        return asyncio.run(self.generate_content_async(prompt, model_type=model_type, system_instruction=system_instruction))
 
     def generate_content_with_file(self, file_path, prompt, model_type="transcription", system_instruction=None):
         import asyncio
         audio_base64 = AudioProcessor.encode_to_base64(file_path)
-        full_prompt = f"{system_instruction}\n\n{prompt}" if system_instruction else prompt
-        return asyncio.run(self.generate_content_async(full_prompt, audio_base64=audio_base64, model_type=model_type))
+        return asyncio.run(self.generate_content_async(prompt, audio_base64=audio_base64, model_type=model_type, system_instruction=system_instruction))
 
     def _wait_for_file_active(self, client, file_obj):
         """Waits for the uploaded file to be in ACTIVE state."""

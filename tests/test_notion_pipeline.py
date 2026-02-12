@@ -44,7 +44,7 @@ def test_execute_job_notion_success(mock_cleanup, mock_job_manager_class, mock_s
     mock_notion_service = mock_notion_service_class.return_value
     mock_notion_service.create_page.return_value = "http://notion.url"
     
-    mock_audio_class.get_duration.return_value = 100
+    mock_audio_class.process_for_transcription.return_value = ["temp/job_123_chunk_001.mp3"]
     
     mock_notes.return_value = True
     
@@ -84,6 +84,8 @@ def test_execute_job_notion_failure(mock_cleanup, mock_job_manager_class, mock_s
     
     mock_notion_service = mock_notion_service_class.return_value
     mock_notion_service.create_page.side_effect = Exception("API Error")
+    
+    mock_audio_class.process_for_transcription.return_value = ["temp/job_123_chunk_001.mp3"]
     
     mock_audio_class.get_duration.return_value = 100
     mock_notes.return_value = True

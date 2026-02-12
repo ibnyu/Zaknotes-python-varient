@@ -78,9 +78,8 @@ def test_hls_downloader_flags(mock_config, mock_run):
             
         found_hls_flags = False
         for call in mock_run_cmd.call_args_list:
-            cmd_str = call[0][0]
-            if "--downloader ffmpeg --hls-use-mpegts" in cmd_str:
+            cmd_args = call[0][0]
+            if any("--downloader" == a for a in cmd_args) and any("ffmpeg" == a for a in cmd_args) and any("--hls-use-mpegts" == a for a in cmd_args):
                 found_hls_flags = True
                 break
-        
         assert found_hls_flags, "HLS downloader flags not found in EdgeCourseBD/Vimeo command"

@@ -34,3 +34,6 @@ src/ui_elements/
 .DS_Store
 *.swp
 *~gemini-cli-auth-files/
+gemini_cli_auth.json
+usage_stats.json
+error.json

@@ -56,7 +56,7 @@ def test_resume_from_downloaded(pipeline_setup):
         # Should call silence removal since status is DOWNLOADED
         assert mock_silence.called or mock_reencode.called or mock_copy.called
 
-def test_resume_from_chunked(pipeline_setup):
+def test_resume_from_chunked(pipeline_setup, tmp_path):
     """Test that if status is CHUNKED, download and processing are skipped."""
     pipeline = pipeline_setup
     job = {
@@ -66,29 +66,51 @@ def test_resume_from_chunked(pipeline_setup):
         "status": "CHUNKED"
     }
 
-    with patch("src.downloader.get_expected_audio_path") as mock_path, \
-         patch("src.pipeline.os.path.exists") as mock_exists, \
-         patch("src.pipeline.os.listdir") as mock_listdir, \
-         patch("src.downloader.download_audio") as mock_download, \
-         patch("src.audio_processor.AudioProcessor.remove_silence") as mock_silence, \
-         patch("src.pipeline.open", MagicMock()):
+    # Use a real directory structure within tmp_path
+    base_dir = tmp_path
+    temp_dir = base_dir / "temp"
+    temp_dir.mkdir()
+    downloads_dir = base_dir / "downloads"
+    downloads_dir.mkdir()
+    
+    (downloads_dir / "Test_Job.mp3").touch()
+    (temp_dir / "job_job1_chunk_001.mp3").touch()
+    (temp_dir / "job_job1_chunk_002.mp3").touch()
 
-        mock_path.return_value = "downloads/Test_Job.mp3"
-        mock_exists.side_effect = lambda p: True if "job1" in p or p == "temp" or "downloads" in p or "Test_Job" in p else False
-        # listdir returns chunks for this job
-        mock_listdir.return_value = ["job_job1_chunk_001.mp3", "job_job1_chunk_002.mp3"]
+    # Need to patch 'temp' and 'downloads' usage in pipeline
+    import os
+    orig_exists = os.path.exists
+    orig_makedirs = os.makedirs
+    orig_listdir = os.listdir
+    orig_open = open
+
+    def mock_exists(path):
+        if any(x in path for x in ["temp", "downloads", "job1", "Test_Job"]):
+            return True
+        return orig_exists(path)
+
+    with patch("src.pipeline.os.path.exists", side_effect=mock_exists), \
+         patch("src.pipeline.os.makedirs") as mock_makedirs, \
+         patch("src.pipeline.os.listdir", return_value=["job_job1_chunk_001.mp3", "job_job1_chunk_002.mp3"]), \
+         patch("src.pipeline.open", MagicMock()), \
+         patch("src.downloader.get_expected_audio_path", return_value="downloads/Test_Job.mp3"), \
+         patch("src.downloader.download_audio") as mock_download, \
+         patch("src.audio_processor.AudioProcessor.remove_silence") as mock_silence:
 
         pipeline.api.generate_content_with_file.side_effect = Exception("Stop here")
 
         try:
             pipeline.execute_job(job)
         except Exception as e:
-            if str(e) != "Stop here" and "No such file or directory" not in str(e): raise
+            if str(e) != "Stop here": raise
 
         mock_download.assert_not_called()
         mock_silence.assert_not_called()
         assert pipeline.api.generate_content_with_file.called
 
+        
+
+    
 def test_resume_transcription_skip_chunks(pipeline_setup):
     """Test that already transcribed chunks are skipped."""
     pipeline = pipeline_setup
@@ -103,13 +125,14 @@ def test_resume_transcription_skip_chunks(pipeline_setup):
     with patch("src.downloader.get_expected_audio_path") as mock_path, \
          patch("src.pipeline.os.path.exists") as mock_exists, \
          patch("src.pipeline.os.listdir") as mock_listdir, \
-         patch("src.pipeline.open", MagicMock()):
-
+         patch("src.pipeline.open", MagicMock()) as mock_open:
+    
         mock_path.return_value = "downloads/Test_Job.mp3"
-        # We need DOWNLOADED to be skipped, so audio_path must exist
-        mock_exists.side_effect = lambda p: True if "job1" in p or p == "temp" or "Test_Job" in p else False
+        mock_exists.side_effect = lambda p: True if any(x in p for x in ["temp", "downloads", "job1", "Test_Job"]) else False
         mock_listdir.return_value = ["job_job1_chunk_001.mp3", "job_job1_chunk_002.mp3"]
-
+        
+        # Mock file reading to return 1 chunk already done
+        mock_open.return_value.__enter__.return_value.read.return_value = "Chunk 1 content\n\n"
         # If it tries to transcribe chunk 1, this will fail. If it skips, it will try chunk 2 and fail there.
         pipeline.api.generate_content_with_file.side_effect = [Exception("Stop at chunk 2")]
 

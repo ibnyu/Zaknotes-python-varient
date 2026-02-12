@@ -3,6 +3,7 @@ import os
 import sys
 import shutil
 import logging
+import json
 from src.job_manager import JobManager
 
 # Configure logging to show INFO level and above on terminal
@@ -18,6 +19,87 @@ from src.notion_service import NotionService
 from src.config_manager import ConfigManager
 from src.pipeline import ProcessingPipeline
 from src.cleanup_service import FileCleanupService
+from src.gemini_auth_service import GeminiAuthService
+from src.gemini_creds_helper import main as run_creds_helper
+
+def manage_gemini_accounts():
+    auth_service = GeminiAuthService()
+    while True:
+        accounts = auth_service.accounts
+        print("\n--- Manage Gemini CLI Accounts ---")
+        if not accounts:
+            print("No accounts configured.")
+        else:
+            print("Configured Accounts:")
+            for i, acc in enumerate(accounts, 1):
+                status_icon = "✅" if acc.get("status") == "valid" else "❌"
+                print(f"{i}. {acc['email']} [{status_icon} {acc['status']}]")
+        
+        print("\n1. Add New Account (Login)")
+        print("2. Run Credential Helper (Extract/Manual IDs)")
+        print("3. Refresh All Tokens")
+        print("4. Back to Main Menu")
+        
+        choice = input("Enter your choice (1-4): ").strip()
+        
+        if choice == '1':
+            creds = run_creds_helper()
+            if not creds:
+                continue
+            
+            import asyncio
+            auth_service = GeminiAuthService() # Reload
+            verifier, challenge = auth_service.generate_pkce()
+            auth_url = auth_service.build_auth_url(creds['clientId'], challenge, verifier)
+            
+            print(f"\n1. Open this URL in your browser:\n{auth_url}\n")
+            print("2. Login and authorize.")
+            print("3. Paste the final redirect URL (http://localhost:8085/...) or the 'code' parameter here.")
+            
+            callback_input = input("\nPaste here: ").strip()
+            if not callback_input:
+                print("❌ No input provided.")
+                continue
+                
+            code = callback_input
+            if "code=" in callback_input:
+                from urllib.parse import urlparse, parse_qs
+                parsed = urlparse(callback_input)
+                params = parse_qs(parsed.query)
+                code = params.get("code", [None])[0]
+            
+            if not code:
+                print("❌ Could not extract code from input.")
+                continue
+                
+            print("🔄 Exchanging code for tokens...")
+            try:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                record = loop.run_until_complete(auth_service.exchange_code_for_tokens(
+                    creds['clientId'], creds['clientSecret'], code, verifier
+                ))
+                print(f"✅ Success! Logged in as {record['email']}")
+            except Exception as e:
+                print(f"❌ Login failed: {e}")
+                
+        elif choice == '2':
+            run_creds_helper()
+        elif choice == '3':
+            import asyncio
+            print("🔄 Refreshing all accounts...")
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            for acc in auth_service.accounts:
+                try:
+                    loop.run_until_complete(auth_service.refresh_token(acc))
+                    print(f"✅ Refreshed {acc['email']}")
+                except Exception as e:
+                    print(f"❌ Failed to refresh {acc['email']}: {e}")
+        elif choice == '4':
+            break
+        else:
+            print("❌ Invalid choice.")
 
 def manage_notion_settings():
     config = ConfigManager()
@@ -241,35 +323,91 @@ def start_note_generation():
         else:
             print("❌ Invalid choice.")
 
+def configure_gemini_models():
+    config = ConfigManager()
+    models_file = "models.json"
+    
+    available_models = []
+    if os.path.exists(models_file):
+        try:
+            with open(models_file, 'r') as f:
+                data = json.load(f)
+                available_models = data.get("models", [])
+        except Exception:
+            pass
+            
+    if not available_models:
+        print("❌ No models found in models.json.")
+        return
+
+    while True:
+        curr_trans = config.get("transcription_model")
+        curr_note = config.get("note_generation_model")
+        
+        print("\n--- Configure Gemini Models ---")
+        print(f"1. Transcription Model: {curr_trans}")
+        print(f"2. Note Generation Model: {curr_note}")
+        print("3. Back to Main Menu")
+        
+        choice = input("Enter your choice (1-3): ").strip()
+        
+        if choice in ['1', '2']:
+            target_key = "transcription_model" if choice == '1' else "note_generation_model"
+            print(f"\nAvailable Models:")
+            for i, model in enumerate(available_models, 1):
+                print(f"{i}. {model}")
+            
+            sel = input(f"Select a model (1-{len(available_models)}): ").strip()
+            try:
+                idx = int(sel) - 1
+                if 0 <= idx < len(available_models):
+                    config.set(target_key, available_models[idx])
+                    config.save()
+                    print(f"✅ {target_key} updated to {available_models[idx]}")
+                else:
+                    print("❌ Invalid selection.")
+            except ValueError:
+                print("❌ Please enter a number.")
+        elif choice == '3':
+            break
+        else:
+            print("❌ Invalid choice.")
+
 def main_menu():
     while True:
         print("\n==============================")
         print("       ZAKNOTES MENU")
         print("==============================")
         print("1. Start Note Generation")
-        print("2. Manage Notion Settings")
-        print("3. Configure Audio Chunking")
-        print("4. Configure Browser User-Agent")
-        print("5. Cleanup Stranded Audio Chunks")
-        print("6. Refresh Cookies")
-        print("7. Exit")
+        print("2. Manage Gemini Accounts")
+        print("3. Manage Notion Settings")
+        print("4. Configure Gemini Models")
+        print("5. Configure Audio Chunking")
+        print("6. Configure Browser User-Agent")
+        print("7. Cleanup Stranded Audio Chunks")
+        print("8. Refresh Cookies")
+        print("9. Exit")
         print("------------------------------")
         
-        choice = input("Enter your choice (1-7): ").strip()
+        choice = input("Enter your choice (1-9): ").strip()
         
         if choice == '1':
             start_note_generation()
         elif choice == '2':
-            manage_notion_settings()
+            manage_gemini_accounts()
         elif choice == '3':
-            configure_audio_chunking()
+            manage_notion_settings()
         elif choice == '4':
-            configure_user_agent()
+            configure_gemini_models()
         elif choice == '5':
-            cleanup_stranded_chunks()
+            configure_audio_chunking()
         elif choice == '6':
-            refresh_cookies()
+            configure_user_agent()
         elif choice == '7':
+            cleanup_stranded_chunks()
+        elif choice == '8':
+            refresh_cookies()
+        elif choice == '9':
             print("Goodbye!")
             break
         else:
