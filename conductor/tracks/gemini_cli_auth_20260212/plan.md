@@ -2,14 +2,14 @@
 
 This plan outlines the steps to replace the standard Gemini API key authentication with the internal Gemini CLI OAuth2 flow and internal endpoints, as specified in `spec.md`.
 
-## Phase 1: Preparation & Legacy Removal
+## Phase 1: Preparation & Legacy Removal [checkpoint: 79e2b86]
 - [x] Task: Remove Legacy API Key Management
     - [x] Delete `src/api_key_manager.py`.
     - [x] Remove `api_key_manager` references from `src/pipeline.py` and `src/gemini_api_wrapper.py`.
     - [x] Delete `tests/test_api_key_manager.py`, `tests/test_api_rotation.py`, and `tests/test_proactive_quota.py`.
 - [x] Task: Remove Truncation and Shortening Logic
     - [x] Audit `src/gemini_api_wrapper.py` and logging statements to remove any logic that truncates request/response data.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation & Legacy Removal' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation & Legacy Removal' (Protocol in workflow.md)
 
 ## Phase 2: Models & Usage Tracking
 - [ ] Task: Implement `models.json`
